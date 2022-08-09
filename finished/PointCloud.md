@@ -217,7 +217,7 @@ Taking a look at what this gives us...
 absolute garbage, We gotta fix that.
 
 ## Line Aesthetics
-**NOTE: If you want more detail on this segment, [here is a very detailed explaination on how I planned this out, including a dive into the very complex lines](github.com/CodeF53/blogs/finished/PointCloud-LineAesthetics.md).** I cut it out because it felt a bit too in the weeds.
+**NOTE: If you want more detail on this segment, [here is a very detailed explaination on how I planned this out, including a dive into the very complex lines](https://github.com/CodeF53/blogs/blob/b9f57f9d4bbde5f079fef075c57810d2e2fabc86/finished/PointCloud.md).** I cut it out because it felt a bit too in the weeds.
 
 Here is a well commented summary of how I fixed it.
 
