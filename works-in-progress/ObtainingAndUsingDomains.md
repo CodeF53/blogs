@@ -34,7 +34,7 @@ In your own search, some of the other services may look cheaper, but will have a
 ### Is it Possible?
 Before I buy, I want to check if its even possible to do this, because I dont want to have to also start paying for a server to host stuff.
 
-[Here are the docs on this exact thing](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages#using-an-apex-domain-for-your-github-pages-site), looks like they are pretty indepth and immediatly require you work with your DNS Provider*.
+[Here are the docs on this exact thing](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages#using-an-apex-domain-for-your-github-pages-site), they are pretty indepth, so yeah, it looks like this is indeed a thing you can do. They basically immediatly require you work with your DNS Provider*, so there is no testing the waters before you buy your domain.
 
 \* For clarification, DNS Provider here is Domain Name Service Provider, which for me is Google Domains
 
