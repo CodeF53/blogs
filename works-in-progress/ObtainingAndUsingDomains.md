@@ -40,10 +40,9 @@ I would avoid Domain.com because, if they are willing to scare you into an upsel
 ### Is it Possible?
 Before I buy, I want to check if its even possible to do this, because I dont want to have to also start paying for a server to host stuff.
 
-[Here are the docs on this exact thing](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages#using-an-apex-domain-for-your-github-pages-site), looks like they are pretty indepth and immediatly require you work with your DNS Provider*.
+[Here are the docs on this exact thing](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages#using-an-apex-domain-for-your-github-pages-site), they are pretty indepth, so yeah, it looks like this is indeed a thing you can do. They basically immediatly require you work with your DNS Provider*, so there is no testing the waters before you buy your domain.
 
 \* For clarification, DNS Provider here is Domain Name Service Provider, which for me is Google Domains
-
 While checking out f53.dev, I got a warning about .dev domains requiring SSL certificates.\
 !["Warning that says \".dev is a secure namespace. You may purchase f53.dev now, but it will require an SSL certificate for website connection\""](https://i.imgur.com/xfZkJV9.png)\
 Looking into this, [its brutally simple to set up SSL certificates when using github pages](https://docs.github.com/en/pages/getting-started-with-github-pages/securing-your-github-pages-site-with-https)
@@ -81,8 +80,7 @@ Click into the pages tab:\
 Scroll down, type in the domain you bought into the "Custom Domain" box, and click save\
 ![](https://i.imgur.com/dkzRPOL.png)
 
-After this, if you did everything right, it will eventually say "DNS check successful"\
-![](https://i.imgur.com/9AXpm2Q.png)
+imgur.com/9AXpm2Q.png)
 ### Step 3: wait it was that easy?
 yeah.\
 ![](https://i.imgur.com/z3SX7j2.png)
