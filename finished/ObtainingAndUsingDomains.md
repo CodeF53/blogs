@@ -80,7 +80,6 @@ Click into the pages tab:\
 Scroll down, type in the domain you bought into the "Custom Domain" box, and click save\
 ![](https://i.imgur.com/dkzRPOL.png)
 
-imgur.com/9AXpm2Q.png)
 ### Step 3: wait it was that easy?
 yeah.\
 ![](https://i.imgur.com/z3SX7j2.png)
