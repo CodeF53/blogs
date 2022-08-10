@@ -95,3 +95,10 @@ Google actually offered me this at checkout of the URL:\
 ![screenshot of google's custom email options, not really intersting stuff](https://i.imgur.com/f51m5sk.png)
 
 I probably wont do this because [google seemingly treats their premium users worse](https://youtu.be/fiXjR-AhSqs?t=71).
+
+## [EDIT]: Email Forwarding
+Thank you for commenting about this!
+![](https://i.imgur.com/9RcsWmn.png)
+
+Setting it up is super simple too.
+![](https://i.imgur.com/jtuAZ4N.png)
