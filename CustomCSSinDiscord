@@ -1,0 +1,173 @@
+### Isnt modding discord against their TOS?
+Yes.
+
+### Has anyone been banned for it?
+No.
+
+## Intro
+Alright so discord looks pretty good but its not the best, lets fix that.
+
+### Intro to Goosemod
+
+To start with this your gonna need a modded discord client.
+
+I recommend goosemod, its super easy to install, even if you use discord in a browser.
+
+https://goosemod.com/
+
+Once you have this installed, you will have a couple new things in your discord client
+
+In your friends menu, you will have these themes and plugins buttons:
+
+![](https://i.imgur.com/ZsKD4qo.png)
+
+I recommend installing 2 themes right now, Revert Rebrand and Forgotten Keep, just search them and click install.
+
+With that done, discord already looks 10x better.
+
+## Where to write Custom CSS
+
+Goosemod adds a Custom CSS section into your options menu
+
+Go to settings
+
+![](https://i.imgur.com/OnWqcbk.png)
+
+Now scroll down to the goosemod section, and click Custom CSS
+
+![](https://i.imgur.com/W5BJ7tZ.png)
+
+## Hiding Stuff with Custom CSS
+
+Alright, lets get started improving discord.
+
+Discord loves shoving Nitro, their premium service, down your throat wherever you go, lets go over the process of removing all of this.
+
+### Gift Button (indepth tutorial)
+
+In the chat box, there is this gift button, this is super simple to get rid of.
+
+First, do ctrl+shift+i to open the inspect element menu, and click the elements tab, and click the element picker thing
+
+![](https://i.imgur.com/KKpLl1f.png)
+
+Then click the element you want to get rid of, in this case, the gift button in the chat box.
+
+After that, find the outermost container of the element that has some unique feature you can use a css selector on 
+
+![](https://i.imgur.com/kQxF85H.png)
+
+In this case, we are really lucky, the outermost element has a nice, super unique `aria-label` that we can select with css
+
+Take note of how you will select this element with css, go back to the goosemod custom CSS box, and write some CSS to hide it.
+
+Also, you may end up writing a whole LOAD of custom css depending on how into this you get, so its a good idea to commant your code so it makes sense later on
+
+```css
+/* Hide Gift Button in chat box */
+button[aria-label="Send a gift"] {
+    display: none;
+}
+```
+
+This CSS applies hot, so once you write it, it will instantly work with no need to refresh! Press `esc` to admire your work!
+
+### Nitro tab of Friends screen
+![](https://i.imgur.com/PpLpgty.png)
+
+This has the following HTML
+
+```html
+<li class="channel-1Shao0 container-32HW5s" role="listitem" aria-posinset="2" aria-setsize="204"><div class="interactive-1vLZ_I interactive-iyXY_x linkButton-2NshQj"><a class="link-39sEB3" data-list-item-id="private-channels-uid_7902___nitro" tabindex="-1" href="/store"><div class="avatarWithText-1tTt2S layout-1LjVue">...<div class="content-66wMin"><div class="nameAndDecorators-2A8Bbk"><div class="name-2m3Cms">Nitro</div></div></div></div></a></div></li>
+```
+
+This doesn't look like it has the best "unique" thing for us to use a selector on, but discord isnt going to add new tabs to this section anytime soon, so we can just hook onto the `aria-posinset="2"` with some specificity on its classes.
+
+```css
+/* Hide Nitro Tab in Friends Menu */
+.channel-1Shao0.container-32HW5s[aria-posinset="2"] {
+    display: none;
+}
+```
+
+Nice
+
+![](https://i.imgur.com/3Dj8nVz.png)
+
+
+### Nitro Boost Banner
+![](https://i.imgur.com/xI23kKt.png)
+
+If you get into Bigger servers, they start asking you to "boost" the server with this little banner.
+
+It used to be a whole lot bigger and more obnoxious, but it still is taking up unnecessary space on the screen
+
+```html
+<div class="container-2giAcK" aria-label="This server has unlocked all Boosting perks!" role="button" tabindex="0">...</div>
+```
+
+```css
+/* hide nitro boost banner */
+div.container-2giAcK[tabindex="0"] {
+    display: none;
+}
+```
+
+ok, but now we have a leftover space element that makes it look weird
+
+![](https://i.imgur.com/a9pgDkX.png)
+
+We can just add an additional selector for the spacing div that follows this
+
+```css
+/* hide nitro boost banner */
+div.container-2giAcK[tabindex="0"], div.container-2giAcK[tabindex="0"] + div {
+    display: none;
+}
+```
+
+![](https://i.imgur.com/3TCzHW9.png)
+
+perfect!
+
+## Doing fancy stuff with CSS
+### Collapsing the members panel dynamically
+![](https://i.imgur.com/vSWfjtX.png)
+
+When you have discord only taking up half the screen, and dont hide the members panel, the chat gets really crampt.
+
+If we do some magic with onhover and a load of stuff, we can have the members thing collapsed by default, only showing the icons of people who are online. Then, when its hovered, it expands out to show usernames, statuses, and roles
+
+```css
+/* Slidy Members */
+[class*="membersWrap-"] [class*="membersGroup-"] {
+    margin-right: auto;
+    width: 57px;
+    text-overflow: clip;
+    direction: rtl;
+    word-spacing: 1000px;
+}
+[class*="membersWrap-"]:hover [class*="membersGroup-"],
+[class*="membersWrap-"]:focus-within [class*="membersGroup-"] {
+    width: 100%;
+    margin: 0;
+    direction: ltr;
+    word-spacing: unset;
+    text-overflow: ellipsis;
+}
+.membersWrap-3NUR2t{
+  min-width: 0 !important; 
+}
+.members-3WRCEx {
+  transition: 250ms ease all;
+  width: 64px !important; 
+}
+.members-3WRCEx:hover {
+  width: 64px !important;
+}
+.membersWrap-3NUR2t:hover .members-3WRCEx{
+  width: 245px !important;
+}
+```
+
+![](https://i.imgur.com/T7XnSsp.gif)
