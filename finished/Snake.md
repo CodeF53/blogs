@@ -61,9 +61,7 @@ document.body.addEventListener("keydown", (e) => {
 
 ## A clever way to wait until a user's first input
 
-The game will run in "ticks", using a similar interval thing to the pointcloud code.
-
-This makes our tick and render methods run every 50 milliseconds. I chose 50 randomly.
+The game will run in "ticks", using a similar interval thing to the pointcloud code. I chose 50ms randomly.
 
 ```js
 setInterval(()=>{gameTick();gameRender()}, 50);
@@ -153,9 +151,9 @@ if (headPos.x == apple.x && headPos.y == apple.y) {
 }
 ```
 
-After we have eaten the apple, we need a new apple. This is a bit more complex.
+After we have eaten the apple, we need a new apple. This is a bit complex.
 
-We could just say a new random location
+While we could just say a new random location, like this:
 
 ```js
 if (headPos.x == apple.x && headPos.y == apple.y) {
@@ -164,7 +162,7 @@ if (headPos.x == apple.x && headPos.y == apple.y) {
 } else {
 ```
 
-But this new location could be covered by a part of the snake's body, leading to confusion.
+This new location could be covered by a part of the snake's body, leading to confusion.
 
 To fix this, we use the following logic
 
