@@ -184,6 +184,10 @@ while (invalidApplePos) {
 }
 ```
 
+The general "win" condition for snake is when you have covered the whole board.
+
+This is great, because it stops the user from playing anymore once they have won because the while loop never terminates
+
 ## Snake Death
 
 The last core part of the game we need to implement is a way for our snake to "die"
