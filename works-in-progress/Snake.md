@@ -1,30 +1,33 @@
 ## Intro
+
 I was bored and wanted to make a thing. How about snake?
 
 Snake is a simple game that works on a grid.
 
-When the snake runs into itself it dies.
-
-An apple is placed randomly in the field and when the player successfully guides the snake into it, the snake grows by one.
+- once you start, the snake is always moving
+- when the snake runs into itself it dies.
+- eating apples expands the snake
+  - apples are placed randomly
 
 The goal of the game is to eat as many apples as possible without dying.
 
-## Game controls
+## Game Controls
 
 We gotta have a way for a user to change the direction our snake is facing, so they can play the game.
 
-There are two "obvious" control layouts for this: 
-- WASD: Your standard controls for every pc game
-    - W "up/forward"
-    - A "left"
-    - S "down/backward"
-    - D "right"
-- Arrow keys: its pretty intuitive to have these keys mapped to directions
-    - Up "up"
-    - Left "left"
-    - ... this is intuitive, I dont need to write this out
+There are two "obvious" control layouts for this:
 
-I didn't want to force people either way, so I just decided to implement both.
+- WASD: Your standard controls for every pc game
+  - W "up/forward"
+  - A "left"
+  - S "down/backward"
+  - D "right"
+- Arrow keys: its pretty intuitive to have these keys mapped to directions
+  - Up "up"
+  - Left "left"
+  - and so on...
+
+I didn't want to force people to choose one layout, so I just decided to implement both.
 
 Setting up these controls is brutally simple, just adding an event listener to keypresses, with a bit of logic from a switch.
 
@@ -58,9 +61,10 @@ document.body.addEventListener("keydown", (e) => {
 
 ## A clever way to wait until a user's first input
 
-The game will run in "ticks", using a similar interval thing to the pointcloud code. In some cases we will want to render our without ticking, so we have them as separate methods.
+The game will run in "ticks", using a similar interval thing to the pointcloud code.
 
 This makes our tick and render methods run every 50 milliseconds. I chose 50 randomly.
+
 ```js
 setInterval(()=>{gameTick();gameRender()}, 50);
 ```
@@ -79,7 +83,7 @@ function gameTick() {
 
 You could rack your brain for hundreds of ways to store the positions of a snake, I went with this.
 
-We will have this array of objects I will call snakeparts for simplicity. 
+We will have this array of objects I will call snakeparts for simplicity.
 
 ```js
 snake = [{x:13,  y:15}, {x:14,  y:15}, {x:15,  y:15}]
@@ -123,12 +127,14 @@ if (__Snake_Ate_Apple__) {
 ```
 
 ## Apple Logic
+
 ```js
 let apple = {x:rand(GameSize), y:rand(GameSize)}
 ```
+
 Our apple will be stored in a single object, identical in formatting to a single snakepart.
 
-Our random here is different from the one we used in PointCloud because we are working on a small grid, so want ints, and we will also always have a min of 0
+Our random here is different from the one we used in PointCloud because we are working on a small grid, so want integers, and we will also always have a min of 0
 
 ```js
 const rand = (max) => parseInt(Math.random() * max); // random int between 0 and max
@@ -138,7 +144,7 @@ Checking if our snake has "eaten" the apple is super simple, we just look to see
 
 ```js
 let headPos = snake[snake.length-1]
-// check if succesfully ate apple 
+// check if successfully ate apple 
 if (headPos.x == apple.x && headPos.y == apple.y) {
     // new apple
 } else {
@@ -150,6 +156,7 @@ if (headPos.x == apple.x && headPos.y == apple.y) {
 After we have eaten the apple, we need a new apple. This is a bit more complex.
 
 We could just say a new random location
+
 ```js
 if (headPos.x == apple.x && headPos.y == apple.y) {
     // new apple
@@ -160,6 +167,7 @@ if (headPos.x == apple.x && headPos.y == apple.y) {
 But this new location could be covered by a part of the snake's body, leading to confusion.
 
 To fix this, we use the following logic
+
 - Make a new apple at a random location
 - Check if any part of the snake is overlapping
 - If it's overlapping, try a new location
@@ -169,7 +177,7 @@ let invalidApplePos = true;
 while (invalidApplePos) {
     invalidApplePos = false
     apple = {x:rand(GameSize), y:rand(GameSize)}
-    // make sure snake isnt overlapping apple
+    // make sure snake isn't overlapping apple
     for (let i = 0; i < snake.length; i++) {
         if (snake[i].x == apple.x && snake[i].y == apple.y) {
             invalidApplePos = true
@@ -197,6 +205,7 @@ But what happens when we die?
 ## Game restarts
 
 Instead of initializing all of our game variables with an initial value, we can do this:
+
 ```js
 let Facing
 let snake
@@ -279,14 +288,14 @@ function gameTick() {
                 break;
         }
         let headPos = snake[snake.length-1]
-        // check if succesfully ate apple 
+        // check if successfully ate apple 
         if (headPos.x == apple.x && headPos.y == apple.y) {
             // put apple in new position
             let invalidApplePos = true;
             while (invalidApplePos) {
                 invalidApplePos = false
                 apple = {x:rand(GameSize), y:rand(GameSize)}
-                // make sure snake isnt overlapping apple
+                // make sure snake isn't overlapping apple
                 for (let i = 0; i < snake.length; i++) {
                     if (snake[i].x == apple.x && snake[i].y == apple.y) {
                         invalidApplePos = true
@@ -312,11 +321,13 @@ setInterval(()=>{gameTick();gameRender()}, 50);
 That is snake in just below 100 lines of javascript, but we are forgetting something.
 
 ## Rendering the game
+
 I left this part last because it was the hardest part for me. I wanted to go for a Pixel Art rendering style, with a small 30x30 pixel canvas.
 
 Rendering this way is super duper easy and self explanatory.
 
 We initialize our canvas the same way as we did in my pointcloud code
+
 ```js
 // Canvas Initialization
 const canvas = document.getElementById('SnakeGame');
@@ -326,6 +337,7 @@ const ctx = canvas.getContext('2d');
 ```
 
 Then in our render function, we fill the canvas black, then draw in our red apple and white snake.
+
 ```js
 function gameRender() {
     ctx.fillStyle = 'black';
@@ -380,7 +392,7 @@ function FitCanvas(){
         x: (window.innerWidth) / canvas.width, 
         y: (window.innerHeight) / canvas.height
     };
-    // we then say we will strech our canvas to whichever scale is less
+    // we then say we will stretch our canvas to whichever scale is less
     // this makes our square never get cut off by the edges of the window
     if (scale.x < scale.y) { 
         scale = scale.x + ', ' + scale.x;
@@ -411,6 +423,7 @@ There are 5 different methods for transforming a canvas.
 ```
 
 That wasn't all the css the fullscreenify method initially contained, I just split out the constant css into my actual css file.
+
 ```css
 #SnakeGame { 
     /* 5 different standards for the exact same thing */
@@ -420,7 +433,7 @@ That wasn't all the css the fullscreenify method initially contained, I just spl
     -o-transform-origin: center top;
     transform-origin: center top;
 
-    /* extra css fullscreenify didnt include */
+    /* extra css fullscreenify didn't include */
     display: block; 
     /* Makes it not upscale like Garbage */
     image-rendering: pixelated;  
@@ -431,7 +444,8 @@ That wasn't all the css the fullscreenify method initially contained, I just spl
 ```
 
 ## Conclusion
-You can play the completed game at https://codef53.github.io/snake/
+
+You can play the completed game at <https://codef53.github.io/snake/>
 
 It will eventually be at [f53.dev/snake](https://f53.dev/snake), but I need to figure out how to put it there.
 
