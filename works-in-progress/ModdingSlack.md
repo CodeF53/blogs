@@ -73,7 +73,7 @@ I expected to get a result something like this
 
 ![image of some options and then a poorly formatted Custom Tab!](https://i.imgur.com/7t1nGDA.png)
 
-Problem was literally nothing happened. No matter how many comments I added nothing worked.
+Problem was literally nothing happened. No matter how many logs I added I couldn't even find when my code was running.
 
 That code still should work in theory if everything is loaded, so lets put it in a function for later.
 
@@ -127,7 +127,7 @@ There are probably hundreds of solutions to this, but here is the one I came up 
 ```js
 // cant safely select any HTML, so select root
 document.addEventListener("click", (event) => {
-    // check if clicked element is the button that opens our screen
+    // check if clicked element is the button that opens the preferences window
     let element = event.target 
     if (element.classList[0]=="c-menu_item__label" && element.innerHTML == "Preferences") {
         addSettingsTab()
@@ -155,7 +155,7 @@ slack's code:
 
 We try adding a button to the screen before its made!
 
-We can fix this by adding an asynchronous wait command, making our button adding code run after the screen is made.
+We can fix this by adding an asynchronous wait command to our code run after the screen is made, fixing the issue.
 
 ```js
 // setTimeout(function to run, how long from now to run it in milliseconds)
@@ -226,7 +226,7 @@ I honestly didnt expect it to be that easy and thats why I made it it's own step
 
 ![the normal slack preferences tabs but with custom css at the bottom looking hot](https://i.imgur.com/JrCh9pp.png)
 
-Tabs being visually selected is dependent on if they have one class `c-tabs__tab--active`. So doing the selection stuff is as this:
+Tabs being visually selected is dependent on if they have one class `c-tabs__tab--active`. So the process of deselecting/selecting should be something like this:
 
 ```js
 const activeClass = "c-tabs__tab--active"
@@ -274,7 +274,7 @@ Now we have a text editor!
 ![the slack preferences page, but with custom css selected and a empty text window](https://i.imgur.com/x6R8Zpm.png)
 
 ### Actually using input as CSS
-[This stackoverflow answer](https://stackoverflow.com/a/707580) is great for arbitrary CSS not specific to a node. The following is loosely based on it for our purposes:
+[This stackoverflow answer](https://stackoverflow.com/a/707580) is great for adding arbitrary CSS not specific to a node. The following is loosely based on it for our purposes:
 
 ```js
 // make a new style element for our custom CSS
@@ -320,12 +320,12 @@ cssEditor.setAttribute("cols", "60")
 cssEditor.value = getCustomCSS()
 ```
 
-Finding which event listener to use for when new characters are added to this editor was more difficult, but by reading through the [list of all event listeners](https://developer.mozilla.org/en-US/docs/Web/Events#event_listing) I found what I needed, the horribly named ["input" event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event).
+Finding which event listener to detects when new characters are added to this editor was more difficult, but by reading through the [list of all event listeners](https://developer.mozilla.org/en-US/docs/Web/Events#event_listing) I found what I needed, the horribly named ["input" event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event).
 
 From it's description, its exactly what we need:
 > The input event fires when the value of an `<input>`, `<select>`, or `<textarea>` element has been changed.
 
-But it's name is `input`, not `inputChanged` or something descriptive, just `input`
+But it's name is `input`, not `inputChanged` or something descriptive, just `input`.
 
 Once we do know the horribly bad name for the event listener we need, making the css update in real time is easy:
 ```js
@@ -367,8 +367,37 @@ To fix the monospace font issue, I just changed the default value of our CSS fie
 }
 ```
 
+That brings the editor to a somewhat useable point
+
+![prior screenshot but with monospace font](https://i.imgur.com/WLY4YLX.png)
+
+I added a bit more css to make the editor nicer to use.
+
+```css
+/*Write Custom CSS here!*/
+/* Improve Legibility of Custom CSS Area */
+.p-prefs_dialog__panel textarea {
+    font-family: Monaco, Menlo, Consolas, CourierNew, monospace!important;
+    font-size: 12px;
+    /* Make editor fill Preferences panel */
+    width: 100%; 
+    height: calc(100% - 0.5rem);
+    /* disable text wrapping */
+    white-space: nowrap;
+    /* make background of editor darker */
+    background-color: #1c1c1c;
+}
+/* Increase width of Preferences to allow for more code width */
+body > div.c-sk-modal_portal > div > div {
+    max-width: 100%!important;
+}
+```
+
+![prior screenshot but editor panel is significantly wider, with a slightly smaller font and darker background](https://i.imgur.com/1Kh9RRu.png)
+
 ## Current Limitations
 Currently, this mod is limited in several ways:
+- CSS does not save newlines
 - CSS does not persist between restarts
     - looking into Javascript file I/O, [there is apparently no direct way to save a file to a user's system](https://stackoverflow.com/questions/21012580/is-it-possible-to-write-data-to-file-using-only-javascript)
 - Injecting is manual and hardcoded to the user's system
