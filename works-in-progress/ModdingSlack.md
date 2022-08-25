@@ -382,4 +382,4 @@ Currently, this mod is limited in several ways:
 
 Normally I would delay release of the blog until all of these issues were fixed, but I have a deadline for releasing this one.
 
-If you want to help solving these issues all the code discussed can be found at (link to github). Otherwise, stay tuned for a followup where I fix these issues.
+If you want to help solving these issues all the code discussed can be found at [github.com/CodeF53/SlackMod](https://github.com/CodeF53/SlackMod). Otherwise, stay tuned for a followup where I fix these issues.
