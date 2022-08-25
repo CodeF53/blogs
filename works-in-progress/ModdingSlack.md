@@ -13,23 +13,39 @@ Given that Slack is worse, you would expect there to be more mods for it. Despit
 
 The only way I have found so far that works now is [this general purpose electron injector](https://github.com/tintinweb/electron-inject) on github. But this is a far cry from the ease of use of Discord client mods like GooseMod.
 
-## blah blah blah
-I wrote a good bit for this section on my desktop, but I didn't push it so I will add it when I get home later.
+## Injecting JavaScript through Electron Inject
+Instead of reinventing the wheel, I decided to make my project depend on the well maintained [electron-inject](https://github.com/tintinweb/electron-inject) github repo.
 
-Some note about that being planned, but for now we are just hardcoded for testing.
+Here's the script I threw together
+
 ```py
 from electron_inject import inject
 
-# linux has no extensions for executables
+# for windows this will be something like "C:/ProgramData/F53/slack/app-4.27.154/slack.exe"
 slack_location = "/usr/lib/slack/slack"
 inject_location = "/home/f53/Projects/SlackMod/inject.js"
 
-inject(slack_location, devtools=True, timeout=600, scripts=[inject_location])   
+inject(slack_location, devtools=True, timeout=600, scripts=[inject_location])
 ```
+
+Developing with this is ~~a pain~~ super easy:
+- Make changes to your javascript file
+- tab to your slack and alt f4 it
+    - make sure you have slack configured so it doesn't go run in the background   
+- alt tab to your console, press up and enter to re-run the python script
 
 For me the injector making F12 open devtools didn't work. Fortunately, slack has a built in `/slackdevtools` command
 
+This was supposed to be a temporary solution for me while I made this mod. With the deadline on this blog coming up, I will make my own automatic injector sometime later.
+
 ## Adding a Custom CSS section to the Preferences menu
+
+### Goal:
+Eventually, I want the custom tab to be similar to Topaz's snippets section, where there is essentially a file picker editing/enabling/disabling individual css files
+![Topaz Snippets](https://i.imgur.com/aVWk3pG.png)
+
+But currently, I have no idea how to save a file, so the goal for today is something more like Goosemod's Custom CSS, which has one editor.
+![Goosemod Custom CSS Screen](https://i.imgur.com/gOUwBp1.png)
 
 ### Initial Plan
 
@@ -179,32 +195,191 @@ document.addEventListener("click", (event) => {
 
 ### Adding text editor into the tab
 
-// REVIEW ALL TEXT FROM HERE ON
-
+Heres the plan:
 ```js
 function addSettingsTab() {
     const settingsTabList = document.querySelector(".p-prefs_dialog__menu")
     customTab = document.createElement("button")
-    customTab.innerHTML = `<span>Custom Tab!</span>`
+    customTab.innerHTML = `<span>Custom CSS</span>`
+    // add class that make look good
+
     // onClick
+    //     deselect old tab
+    //     select new tab
     //     clear pane to the right
-    //     add some kind of multiline text form
+    //     add some kind of multiline text form to the pane
 
     settingsTabList.appendChild(customTab)
 }
 ```
 
-looking at "pane to the right" .p-prefs_dialog__panel:
+Add class that make look good:
+- copy all classes from one of the other buttons
+- set the custom tab to have those
 
-![the right pane in the pref menu](https://i.imgur.com/XB089Dx.png)
+```js
+// add class that make look good
+customTab.classList = "c-button-unstyled c-tabs__tab js-tab c-tabs__tab--full_width"
+```
 
-multiline text form
+I honestly didnt expect it to be that easy and thats why I made it it's own step.
 
-`<textarea>`
+![the normal slack preferences tabs but with custom css at the bottom looking hot](https://i.imgur.com/JrCh9pp.png)
 
+Tabs being visually selected is dependent on if they have one class `c-tabs__tab--active`. So doing the selection stuff is as this:
 
-### Making the text persistent
+```js
+const activeClass = "c-tabs__tab--active"
+// get old tab
+let activeTab = settingsTabList.querySelector("."+activeClass)
+// visually deselect old tab by removing class
+activeTab.classList = // classList but without activeClass
+// visually select new tab by adding class
+customTab.classList = customTab.classList.toString() + " " + activeClass
+```
 
-### Actually using that as CSS
+Removing the selected class at first seems pretty troubling because by default activeTab.classList is an array of some custom object, but calling `activeTab.classList.toString()` lets us just use `.replace(stringToRemove, "")`
 
-### Syntax Highlighting
+That gives us the following:
+
+```js
+// visually deselect old tab by removing class
+activeTab.classList = activeTab.classList.toString().replace(activeClass+" ", "")
+// visually select new tab by adding class
+customTab.classList = customTab.classList.toString() + " " + activeClass
+```
+
+That looks pretty good!
+![prior image but custom css is now selected](https://i.imgur.com/RhyRDa9.png)
+
+Making a text editor is super simple
+```js
+// make the element
+let cssEditor = document.createElement("textarea")
+// size it 
+cssEditor.setAttribute("rows", "33")
+cssEditor.setAttribute("cols", "60")
+```
+
+The rest of our current plan can be done in 1 line. Basically we just throw out whatever the old Preferences tab was showing and put in our textarea
+
+```js
+// clear pane to the right
+// add some kind of multiline text form to the pane
+document.querySelector(".p-prefs_dialog__panel").replaceChildren(cssEditor)
+```
+
+Now we have a text editor!
+
+![the slack preferences page, but with custom css selected and a empty text window](https://i.imgur.com/x6R8Zpm.png)
+
+### Actually using input as CSS
+[This stackoverflow answer](https://stackoverflow.com/a/707580) is great for arbitrary CSS not specific to a node. The following is loosely based on it for our purposes:
+
+```js
+// make a new style element for our custom CSS
+let styleSheet = document.createElement("style")
+// set default contents of Custom CSS
+styleSheet.innerText = "/*Write Custom CSS here!*/"
+// give it an id to make it easier to query
+// the document for this stylesheet later
+styleSheet.id = "SlackMod-Custom-CSS"
+// add to head
+document.head.appendChild(styleSheet)
+```
+
+We cant just do `styleSheet.innerText = new value` because styleSheet is a static reference. Instead we query the document for the ID we gave it and then set the css from there: 
+
+`document.querySelector("#SlackMod-Custom-CSS").innerText = newCSS;`
+
+To make this cleaner, I made 2 methods
+
+```js
+// method to quickly change css
+const updateCustomCSS = newCSS => { document.querySelector("#SlackMod-Custom-CSS").innerText = newCSS; }
+// method to quickly get inner css
+const getCustomCSS = () => { return document.querySelector("#SlackMod-Custom-CSS").innerText}
+```
+
+Now we just need to make our `cssEditor` run these accordingly
+```js
+// a big proper editor
+let cssEditor = document.createElement("textarea")
+cssEditor.setAttribute("rows", "33")
+cssEditor.setAttribute("cols", "60")
+// set content from current CSS
+// on new chars added
+    // update current CSS
+```
+
+Setting content is easy
+```js
+cssEditor.setAttribute("rows", "33")
+cssEditor.setAttribute("cols", "60")
+// set content from current CSS
+cssEditor.value = getCustomCSS()
+```
+
+Finding which event listener to use for when new characters are added to this editor was more difficult, but by reading through the [list of all event listeners](https://developer.mozilla.org/en-US/docs/Web/Events#event_listing) I found what I needed, the horribly named ["input" event](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event).
+
+From it's description, its exactly what we need:
+> The input event fires when the value of an `<input>`, `<select>`, or `<textarea>` element has been changed.
+
+But it's name is `input`, not `inputChanged` or something descriptive, just `input`
+
+Once we do know the horribly bad name for the event listener we need, making the css update in real time is easy:
+```js
+// on new chars added
+cssEditor.addEventListener("input", ()=>{
+    // update current CSS
+    updateCustomCSS(cssEditor.value)
+})
+```
+
+With that, now we are moving!
+![a screenshot of the preferences panel up, set to custom css, with some custom css making the background of the tabs red, and the background of the editor a darker gray](https://i.imgur.com/RsFI1VH.png)
+
+Now we can write css and see it update as we type!
+
+### Making CSS editor behave and look right
+There are a few things preventing this custom CSS panel from feeling usable though.
+- tab kicks you out of the box instead of indenting you
+- the font isn't monospace
+- upon exiting and re-entering the screen all your newlines are gone
+    - no idea why this happens or how to fix it
+
+Fixing tabs kicking you out is easy, simply prevent default behavior of the tab key when you are in the css editor.
+```js
+// make pressing tab add indent
+cssEditor.addEventListener("keydown", (event) => {
+    if (event.code == "Tab") {
+        event.preventDefault();
+    }
+})
+```
+I have no idea how to make it actually indent you though.
+
+To fix the monospace font issue, I just changed the default value of our CSS field to be this instead of just `/*Write Custom CSS here!*/`
+```css
+/*Write Custom CSS here!*/
+.p-prefs_dialog__panel textarea {
+   font-family: Monaco,Menlo,Consolas,Courier New,monospace!important;
+}
+```
+
+## Current Limitations
+Currently, this mod is limited in several ways:
+- CSS does not persist between restarts
+    - looking into Javascript file I/O, [there is apparently no direct way to save a file to a user's system](https://stackoverflow.com/questions/21012580/is-it-possible-to-write-data-to-file-using-only-javascript)
+- Injecting is manual and hardcoded to the user's system
+    - Every time I have changed the javascript I am injecting throughout writing this blog I have
+        - alt+f4'd slack
+        - tabbed to my terminal
+        - pressed up and enter to rerun `python slack_launch.py`
+        - waited ~30 seconds 
+- Selecting custom css in preferences then selecting a different category leads to an issue
+- No syntax highlighting
+
+Normally I would delay release of the blog until all of these issues were fixed, but I have a deadline for releasing this one.
+
+If you want to help solving these issues all the code discussed can be found at (link to github). Otherwise, stay tuned for a followup where I fix these issues.
