@@ -352,6 +352,28 @@ if (window.localStorage.getItem("slackMod-CSS") == null) {
 
 That worked!
 
+![Slack Preferences Screen Open](https://i.imgur.com/IV6W6XS.png)
+
+### Small Touchup: Setting Category Icon
+I started by measuring all the other Category SVGs, they seemed to be all around 15x15.
+
+I then went to https://feathericons.com/?query=code, configured it as close to 15x15 as I could(16x), downloaded it, and copied the HTML. I  changed the size to actually be 15x15
+
+Then, I copied the innerHTML of one of the category buttons. With this I deleted the old SVG inside and replaced it with my own, along with changing the span text to Custom CSS.
+
+```js
+// Proper Label and Icon
+customTab.innerHTML = 
+    `<div class="c-tabs__tab_icon--left" data-qa="tabs_item_render_icon">
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-code"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+    </div>
+    <span>Custom CSS</span>`
+```
+
+I feel like this tiny change makes a word of difference in how polished the CSS editor feels
+
+![Same Screenshot, Custom CSS now has a icon that looks like < >](https://i.imgur.com/UUxtgQj.png)
+
 ## Now What?
 Given my list of issues from last blog, here is what I have left to do:
 - Selecting custom css in preferences then selecting a different category leads to an issue
