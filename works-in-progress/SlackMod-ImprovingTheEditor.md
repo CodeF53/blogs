@@ -16,9 +16,9 @@ This blog will focus on addressing the following of the prior limitations:
 ## How do other mods do it?
 I had an idea in my dream last night that looking at how Discord mods added custom CSS screens would be pretty helpful.
 
-Instead of spending ages problem solving with trial and error to make our own editor, we can base our work on people who have already solved the same issue.
+Instead of spending ages problem solving with trial and error to make our own editor, we can base our work on people who have already solved the same issues as us.
 
-### Reviewing GooseMod's CustomCSS Code
+### Going over GooseMod's CustomCSS Code
 
 I decided to dig through the [code for GooseMod's css editor](https://github.com/GooseMod-Modules/CustomCSS/blob/main/index.js) for inspiration and ideas.
 
@@ -103,8 +103,10 @@ Then, they do 2 things:
 - start a new thread that waits 10ms, then initializes Ace
 - return the div
 
-This is presumably because they cant initialize the editor until the div that it goes in exists.
+This is presumably because they cant initialize the editor until the div that it 
+goes in exists.
 
+`main/index.js lines 45-63` (edited for clarity and briefness)
 ```js
 // instantly ran async function (async function() {..})();
 (async function() {
@@ -182,7 +184,7 @@ inject(slack_location, devtools=True, timeout=600, scripts=[
     inject_location
 ]) 
 ```
-But no, our Electron Inject expects only actual files to be passed into the scripts.
+But no, the Electron Inject python library expects only actual files to be passed into the scripts.
 
 ![FileNotFoundError: [Errno 2] No such file or directory: 'https://ajaxorg.github.io/ace-builds/src-min-noconflict/ace.js'
 ](https://i.imgur.com/4LsiVHi.png)
@@ -272,7 +274,7 @@ cssEditor.style.height = "calc(100% - 0.5rem)";
 cssEditor.innerHTML = getCustomCSS();
 ```
 
-We added our old code to add the editor to settings content pane directly after we initialize it.
+I added the old code I had to add the editor to settings content pane directly after its initialized.
 
 ```js
 // add editor to settings content pane
@@ -303,7 +305,7 @@ Looking over GooseMod's Custom CSS code helped a lot with improving our editor, 
 
 ### Finding what to use
 
-I asked for help with this in the discord and got a single word answer
+I asked for help with this in the discord and got a single word answer: localstorage
 
 ![SmolAlli — localstorage](https://i.imgur.com/YuSmVcd.png)
 
