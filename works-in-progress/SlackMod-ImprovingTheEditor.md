@@ -297,3 +297,64 @@ session.on('change', () => {
 ```
 
 ![Slack Preferences Screen with Custom CSS tab selected with nice syntax highlighted editor](https://i.imgur.com/Ail4shD.png)
+
+## Making CSS Persistent
+Looking over GooseMod's Custom CSS code helped a lot with improving our editor, but there didn't seem to be any good hints towards what to do for persistent saving.
+
+### Finding what to use
+
+I asked for help with this in the discord and got a single word answer
+
+![SmolAlli — localstorage](https://i.imgur.com/YuSmVcd.png)
+
+Looking into that, I found [Mozilla's documentation on it](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage). Looking at the examples, it should be as easy as:
+
+```js
+// get
+localStorage.getItem("slackMod-CSS")
+
+// set
+window.localStorage.setItem("slackMod-CSS", css);
+```
+
+So we want to have a default value for our custom css, so I did a quick check to see what it returns when a value hasn't been assigned yet.
+
+![>>window.localStorage.getItem("test") -> null](https://i.imgur.com/KZssU7o.png)
+
+### Using it
+I started by adding these to our pre-existing get/set methods:
+```js
+// method to quickly change css
+const updateCustomCSS = newCSS => { 
+    // update in storage
+    window.localStorage.setItem("slackMod-CSS", newCSS);
+    // update currently applied CSS
+    document.querySelector("#SlackMod-Custom-CSS").innerHTML = "" 
+    document.querySelector("#SlackMod-Custom-CSS").appendChild(document.createTextNode(newCSS)); 
+}
+// method to quickly get inner css
+const getCustomCSS = () => { 
+    return window.localStorage.getItem("slackMod-CSS")
+}
+```
+
+I then replaced where we set the default contents of our CSS with the following
+```js
+if (window.localStorage.getItem("slackMod-CSS") == null) {
+    // use default CSS
+    styleSheet.innerText = "/*Write Custom CSS here!*/"
+    window.localStorage.setItem("slackMod-CSS", "/*Write Custom CSS here!*/")
+} else {
+    // get saved CSS
+    styleSheet.innerText = window.localStorage.getItem("slackMod-CSS")
+}
+```
+
+That worked!
+
+## Now What?
+Given my list of issues from last blog, here is what I have left to do:
+- Selecting custom css in preferences then selecting a different category leads to an issue
+    - I still have absolutely no clue how to fix this, I have spent a solid 3 hours trying different things
+- Injecting is manual and hardcoded to the user's system
+    - I think I will make my next blog on this, followed by a tutorial on how to install it on your own slack!
