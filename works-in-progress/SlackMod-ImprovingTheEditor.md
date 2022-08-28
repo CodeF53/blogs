@@ -1,5 +1,5 @@
 ## Intro
-In [my previous blog](https://dev.to/f53/adding-a-custom-css-menu-to-slack-1090) I made a working live custom css editor for slack inspired by discord mods. I ended that blog with the following list of limitations the mod has:
+In [my previous blog](https://dev.to/f53/adding-a-custom-css-menu-to-slack-1090) I made a working live css editor for slack inspired by discord mods. I ended that blog with the following list of limitations the mod has:
 
 > - CSS does not save newlines
 > - CSS does not persist between restarts
@@ -7,15 +7,15 @@ In [my previous blog](https://dev.to/f53/adding-a-custom-css-menu-to-slack-1090)
 > - Selecting custom css in preferences then selecting a different category leads to an issue
 > - No syntax highlighting
 
-This blog will focus on addressing the following of the prior limitations:
+This blog will focus on addressing the following of those limitations:
 - CSS does not save newlines
 - CSS does not persist between restarts
 - No syntax highlighting
 
 ## How do other mods do it?
-I had an idea in my dream last night that looking at how Discord mods added custom CSS screens would be pretty helpful.
+I had a idea in a dream last night that looking at how Discord mods add custom CSS could be helpful.
 
-Instead of spending ages problem solving with trial and error to make our own editor, we can base our work on the work of other people who have already solved the same issues.
+Instead of spending ages problem solving with trial and error to make our own editor we can base our work on the work of other people who have already solved these issues.
 
 ### Going over GooseMod's CustomCSS Code
 
@@ -39,8 +39,7 @@ const updateCustomCSS = newCSS => {
 }
 ```
 
-Looking at what they do differently, I wondered if fixing the problem where CSS was not saving newlines was as simple as changing our method to use appended text nodes instead of `innerText`.
-
+Looking at what they did differently, I wondered if fixing the problem of CSS not saving newlines was as simple as changing our method from reassinging `innerText` to appending text nodes instead.
 To test this idea, I revised my methods to this:
 ```js
 // method to quickly change css
@@ -57,9 +56,9 @@ const getCustomCSS = () => {
 }
 ```
 
-Shockingly, this worked! My text editor actually kept it's newlines! I would've never thought to try that.
+Shockingly, this worked! My text editor actually kept newlines! I would've never thought to try that.
 
-Looking at the remaining code, it looks like they use a library called "ace" to create a nice looking text editor
+Looking at the remaining code it looks like they use a library called "ace" to create a nice looking text editor
 
 First they import the libraries they will use:
 
@@ -73,7 +72,7 @@ eval(await (await fetch(`https://ajaxorg.github.io/ace-builds/src-min-noconflict
 eval(await (await fetch(`https://ajaxorg.github.io/ace-builds/src-min-noconflict/mode-css.js`)).text()); // Load CSS lang
 ```
 
-Then they call a function from the goosemod API to add a settings category, something I don't have the luxury of:
+Then they call a function from the goosemod API to add a settings category, (something I don't have the luxury of doing):
 
 `main/index.js lines 29-34` (edited for clarity)
 ```js
@@ -99,7 +98,7 @@ el.innerHTML = css;
 ```
 
 Then, they do 2 things:
-- start a new thread that waits 10ms, then initializes Ace
+- start a new thread that waits 10ms, before initializing Ace
 - return the div
 
 This is presumably because they cant initialize the editor until the div that it 
@@ -131,15 +130,15 @@ goes in exists.
 return el;
 ```
 
-We wont need this async function because we can just add the div to the document then initialize the editor.
+We wont need this async function because we can just add the div to the document before initializing the editor.
 
 ## Implementing what we learned
-From what I read, it seems like initializing Ace will be pretty easy once we get it imported.
+From what I read, it seems like initializing Ace will be easy once we get it imported.
 
-### Importing ace
+### Importing Ace
 Attempting to do exactly what GooseMod did would be nice, but unfortunately it seems Slack has blocked `eval()` on untrusted text. 
 
-Attempting to run in the console
+Attempting to run in the console:
 ```js
 eval(await (await fetch(`https://ajaxorg.github.io/ace-builds/src-min-noconflict/ace.js`)).text()); // Load Ace main
 ```
@@ -158,7 +157,7 @@ script.src = "https://ajaxorg.github.io/ace-builds/src-min-noconflict/ace.js";
 document.head.appendChild(script);
 ```
 
-Attempting to run this gives us a much more clear and descriptive error:
+Attempting to run this gives us a much clearer, descriptive error:
 
 ![Refused to load the script 'link to script' because it violates the following Content Security Policy directive: "script-src 'self' 'wasm-eval' 'wasm-unsafe-eval' https://*.sdkassets.chime.aws https://*.slack.quip.systems https://quip-cdn.com https://slack-prod.qvpc-cdn.com https://a.slack-edge.com/ https://b.slack-edge.com/](https://i.imgur.com/Jy3AH86.png)
 
@@ -170,7 +169,7 @@ What I think this means is that scripts are only allowed from URLs that match on
 - `https://a.slack-edge.com/`
 - `https://b.slack-edge.com/`
 
-Then, I thought could just add the URL for our libraries to the `scripts=[]` argument of our python injecting code:
+Then, I thought I could just add the URL for our libraries to the `scripts=[]` argument of our python injecting code:
 
 ```py
 inject(slack_location, devtools=True, timeout=600, scripts=[
@@ -190,7 +189,7 @@ But no, the Electron Inject python library expects only actual files to be passe
 
 ### Improving our inject script
 
-Given this, I spent some time adding dynamic library downloading to our launch script.
+I spent some time adding dynamic library downloading to our launch script.
 
 Here was the basic idea in pseudocode:
 
@@ -203,7 +202,7 @@ for each library file we need:
     add path to lib to the scripts argument 
 ```
 
-Im not going to go over this line by line, but python reads pretty well and its well commented.
+Im not going to go over this line by line but python reads pretty well and this is well commented.
 
 ```py
 # scripts we will inject are added to this array
@@ -244,15 +243,15 @@ scripts.append(f"{cwd}/inject.js")
 ```
 
 ### Making our editor with Ace
-While we couldn't use GooseMod's code directly for it's imports, its code for setting up ace can practically be copy pasted in place of our old textarea code.
+While we couldn't use GooseMod's code directly for imports, its code for setting up ace can practically be copy pasted in place of our old textarea code.
 
-Given we are using that part of their code in full, I have to include a license. 
+Given we that are using that part of their code in full, I have to include a license. 
 
-I didn't like how much space adding the MIT license took up in my code, so I asked the developer who wrote the code if I actually needed to put it there:
+I didn't like how much space the MIT license took in my code, so I asked the developer who wrote it if I really needed to put it there:
 
 ![Ducko — looks cool, reminds me of a thing i did ages ago just put link to original source as a comment probably | CodeF53 — alright, thanks! | Ducko — and/or include original mit license, up to you it's kinda needed but also not so shrug](https://i.imgur.com/ovY78Kh.png)
 
-Given this answer, I decided to include this comment:
+Based on their response, I decided to include this comment:
 
 ```js
 /*
@@ -261,9 +260,9 @@ https://github.com/GooseMod-Modules/CustomCSS/blob/64969856598a2cc2980988046e0ff
 */
 ```
 
-So what did was changed other than variable/method names?
+So what was changed other than variable/method names?
 
-Changed the width/height css to the css I wrote for the old editor:
+First, I changed the width/height css to the css I wrote for the old editor:
 
 
 ```js
@@ -273,16 +272,16 @@ cssEditor.style.height = "calc(100% - 0.5rem)";
 cssEditor.innerHTML = getCustomCSS();
 ```
 
-I added the old code I had to add the editor to settings content pane directly after its initialized:
+I used old code I had for adding the editor to the settings content pane.
 
 ```js
 // add editor to settings content pane
 document.querySelector(".p-prefs_dialog__panel").replaceChildren(cssEditor)
 ```
 
-Because we add the editor to the dom instantly, we don't need the async function waiting stuff.
+Because we are adding the editor to the dom instantly, we don't need all the async function waiting stuff.
 
-This bit also had theme changed from whatever ugly thing they were using before to dracula:
+I also changed the theme set here from Monokai to Dracula, as it looks better.
 
 ```js
 // point ace to the id we gave our div
@@ -304,11 +303,11 @@ Looking over GooseMod's Custom CSS code helped a lot with improving our editor, 
 
 ### Finding what to use
 
-I asked for help with this in the GooseMod discord and got a single word answer: localstorage
+I asked for help with this in the GooseMod discord and got a single word answer: localstorage.
 
 ![SmolAlli — localstorage](https://i.imgur.com/YuSmVcd.png)
 
-Looking into that, I found [Mozilla's documentation on it](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage). Looking at the examples, it should be as easy as:
+Looking into that, I found some great examples in [Mozilla's documentation on localstorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage). It should be as easy as:
 
 ```js
 // get
@@ -318,7 +317,7 @@ localStorage.getItem("slackMod-CSS")
 window.localStorage.setItem("slackMod-CSS", css);
 ```
 
-So we want to have a default value for our custom css, so I did a quick check to see what it returns when a value hasn't been assigned yet.
+We want to have a default value for our custom css; so I did a quick check to see what is returned when a value hasn't been assigned yet.
 
 ![>>window.localStorage.getItem("test") -> null](https://i.imgur.com/KZssU7o.png)
 
@@ -339,7 +338,7 @@ const getCustomCSS = () => {
 }
 ```
 
-I then replaced where we set the default contents of our CSS with the following:
+I then replaced the code for setting the default contents of our CSS with the following:
 ```js
 if (window.localStorage.getItem("slackMod-CSS") == null) {
     // use default CSS
@@ -356,11 +355,11 @@ That worked!
 ![Slack Preferences Screen Open](https://i.imgur.com/IV6W6XS.png)
 
 ### Small Touchup: Setting Category Icon
-I started by measuring all the other Category SVGs, they seemed to be all around 15x15.
+I started by measuring all the other Category SVGs and they seemed to all be around 15x15.
 
-I then went to https://feathericons.com/?query=code, configured it as close to 15x15 as I could(16x), downloaded it, and copied the HTML. I  changed the size to actually be 15x15
+Then I went to https://feathericons.com/?query=code, configured it as close to 15x15 as I could (16x), downloaded it, and copied the HTML. I  changed the size to 15x15 by hand 
 
-Then, I copied the innerHTML of one of the category buttons. With this I deleted the old SVG inside and replaced it with my own, along with changing the span text to Custom CSS:
+Finally, I copied the innerHTML of one of the category buttons. With this I deleted the old SVG inside and replaced it with my own, along with changing the span text to Custom CSS:
 
 ```js
 // Proper Label and Icon
@@ -376,8 +375,8 @@ I feel like this tiny change makes a word of difference in how polished the CSS 
 ![Same Screenshot, Custom CSS now has a icon that looks like < >](https://i.imgur.com/UUxtgQj.png)
 
 ## Now What?
-Given my list of issues from last blog, here is what I have left to do:
-- Selecting custom css in preferences then selecting a different category leads to an issue
-    - I still have absolutely no clue how to fix this, I have spent a solid 3 hours trying different things
+I fixed most of the issues outlined in my last blogpost, here is what I have left:
+- Selecting custom css in preferences, then selecting a different category leads to an issue
+    - I still have absolutely no clue how to fix this. I have spent a solid 3 hours trying different things...
 - Injecting is manual and hardcoded to the user's system
     - I think I will make my next blog on this, followed by a tutorial on how to install it on your own slack!
