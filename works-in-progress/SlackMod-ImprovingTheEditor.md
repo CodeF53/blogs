@@ -1,7 +1,6 @@
 ## Intro
 In [my previous blog](https://dev.to/f53/adding-a-custom-css-menu-to-slack-1090) I made a working live custom css editor for slack inspired by discord mods. I ended that blog with the following list of limitations the mod has:
 
-> Currently, this mod is limited in several ways:
 > - CSS does not save newlines
 > - CSS does not persist between restarts
 > - Injecting is manual and hardcoded to the user's system
@@ -16,13 +15,13 @@ This blog will focus on addressing the following of the prior limitations:
 ## How do other mods do it?
 I had an idea in my dream last night that looking at how Discord mods added custom CSS screens would be pretty helpful.
 
-Instead of spending ages problem solving with trial and error to make our own editor, we can base our work on people who have already solved the same issues as us.
+Instead of spending ages problem solving with trial and error to make our own editor, we can base our work on the work of other people who have already solved the same issues.
 
 ### Going over GooseMod's CustomCSS Code
 
 I decided to dig through the [code for GooseMod's css editor](https://github.com/GooseMod-Modules/CustomCSS/blob/main/index.js) for inspiration and ideas.
 
-In the first few lines we can start drawing similarities between our code and theirs.
+In the first few lines we can start drawing similarities between our code and theirs:
 
 `main/index.js lines 8-12`
 ```js
@@ -33,7 +32,7 @@ const updateCSS = (c) => {
 };
 ```
 
-This is equivalent to our `updateCurrentCSS` method
+This is equivalent to our `updateCurrentCSS` method:
 ```js
 const updateCustomCSS = newCSS => { 
     document.querySelector("#SlackMod-Custom-CSS").innerText = newCSS; 
@@ -42,7 +41,7 @@ const updateCustomCSS = newCSS => {
 
 Looking at what they do differently, I wondered if fixing the problem where CSS was not saving newlines was as simple as changing our method to use appended text nodes instead of `innerText`.
 
-To test this idea, I revised my methods to this
+To test this idea, I revised my methods to this:
 ```js
 // method to quickly change css
 const updateCustomCSS = newCSS => { 
@@ -50,7 +49,7 @@ const updateCustomCSS = newCSS => {
     document.querySelector("#SlackMod-Custom-CSS").appendChild(document.createTextNode(newCSS); 
 }
 ```
-I also changed my get method to use innerHTML instead of innerText
+I also changed my get method to use innerHTML instead of innerText:
 ```js
 // method to quickly get inner css
 const getCustomCSS = () => { 
@@ -62,7 +61,7 @@ Shockingly, this worked! My text editor actually kept it's newlines! I would've 
 
 Looking at the remaining code, it looks like they use a library called "ace" to create a nice looking text editor
 
-First they import the libraries they will use
+First they import the libraries they will use:
 
 `main/index.js lines 22-27`
 ```js
@@ -74,7 +73,7 @@ eval(await (await fetch(`https://ajaxorg.github.io/ace-builds/src-min-noconflict
 eval(await (await fetch(`https://ajaxorg.github.io/ace-builds/src-min-noconflict/mode-css.js`)).text()); // Load CSS lang
 ```
 
-Then they call a function from the goosemod API to add a settings category, something I don't have the luxury of.
+Then they call a function from the goosemod API to add a settings category, something I don't have the luxury of:
 
 `main/index.js lines 29-34` (edited for clarity)
 ```js
@@ -84,7 +83,7 @@ goosemodScope.settings.createItem('Custom CSS', [
         // want to be in the settings menu
 ```     
 
-Inside that, they initialize the div that will contain their editor with some css.
+Inside that, they initialize the div that will contain their editor with some css:
 
 `main/index.js lines 35-43` (edited for clarity and briefness)
 ```js
@@ -144,13 +143,13 @@ Attempting to run in the console
 ```js
 eval(await (await fetch(`https://ajaxorg.github.io/ace-builds/src-min-noconflict/ace.js`)).text()); // Load Ace main
 ```
-gives us this error
+gives us this error:
 
 ```
 Uncaught EvalError: Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script
 ```
 
-I next thought to try and append a `<script>` to the header 
+I next thought to try and append a `<script>` to the header:
 
 ```js
 var script = document.createElement('script');
@@ -171,7 +170,7 @@ What I think this means is that scripts are only allowed from URLs that match on
 - `https://a.slack-edge.com/`
 - `https://b.slack-edge.com/`
 
-Then, I thought could just add the URL for our libraries to the `scripts=[]` argument of our python injecting code!
+Then, I thought could just add the URL for our libraries to the `scripts=[]` argument of our python injecting code:
 
 ```py
 inject(slack_location, devtools=True, timeout=600, scripts=[
@@ -193,7 +192,7 @@ But no, the Electron Inject python library expects only actual files to be passe
 
 Given this, I spent some time adding dynamic library downloading to our launch script.
 
-Here was the basic idea in pseudocode
+Here was the basic idea in pseudocode:
 
 ```
 for each library file we need:
@@ -253,7 +252,7 @@ I didn't like how much space adding the MIT license took up in my code, so I ask
 
 ![Ducko — looks cool, reminds me of a thing i did ages ago just put link to original source as a comment probably | CodeF53 — alright, thanks! | Ducko — and/or include original mit license, up to you it's kinda needed but also not so shrug](https://i.imgur.com/ovY78Kh.png)
 
-Given this answer, I decided to include this comment.
+Given this answer, I decided to include this comment:
 
 ```js
 /*
@@ -264,7 +263,7 @@ https://github.com/GooseMod-Modules/CustomCSS/blob/64969856598a2cc2980988046e0ff
 
 So what did was changed other than variable/method names?
 
-Changed the width/height css to the css I wrote for the old editor. 
+Changed the width/height css to the css I wrote for the old editor:
 
 
 ```js
@@ -274,7 +273,7 @@ cssEditor.style.height = "calc(100% - 0.5rem)";
 cssEditor.innerHTML = getCustomCSS();
 ```
 
-I added the old code I had to add the editor to settings content pane directly after its initialized.
+I added the old code I had to add the editor to settings content pane directly after its initialized:
 
 ```js
 // add editor to settings content pane
@@ -283,7 +282,7 @@ document.querySelector(".p-prefs_dialog__panel").replaceChildren(cssEditor)
 
 Because we add the editor to the dom instantly, we don't need the async function waiting stuff.
 
-This bit also had theme changed from whatever ugly thing they were using before to dracula.
+This bit also had theme changed from whatever ugly thing they were using before to dracula:
 
 ```js
 // point ace to the id we gave our div
@@ -305,7 +304,7 @@ Looking over GooseMod's Custom CSS code helped a lot with improving our editor, 
 
 ### Finding what to use
 
-I asked for help with this in the discord and got a single word answer: localstorage
+I asked for help with this in the GooseMod discord and got a single word answer: localstorage
 
 ![SmolAlli — localstorage](https://i.imgur.com/YuSmVcd.png)
 
@@ -340,7 +339,7 @@ const getCustomCSS = () => {
 }
 ```
 
-I then replaced where we set the default contents of our CSS with the following
+I then replaced where we set the default contents of our CSS with the following:
 ```js
 if (window.localStorage.getItem("slackMod-CSS") == null) {
     // use default CSS
@@ -361,7 +360,7 @@ I started by measuring all the other Category SVGs, they seemed to be all around
 
 I then went to https://feathericons.com/?query=code, configured it as close to 15x15 as I could(16x), downloaded it, and copied the HTML. I  changed the size to actually be 15x15
 
-Then, I copied the innerHTML of one of the category buttons. With this I deleted the old SVG inside and replaced it with my own, along with changing the span text to Custom CSS.
+Then, I copied the innerHTML of one of the category buttons. With this I deleted the old SVG inside and replaced it with my own, along with changing the span text to Custom CSS:
 
 ```js
 // Proper Label and Icon
