@@ -377,7 +377,7 @@ Their response took a bit, but it was worth it
 
 ![A screenshot of the word "TRUE" heavily deepfried](https://i.imgur.com/YlVrs4V.png)
 
-With that, I knew at least this bit of code would work
+With that, I knew at least this bit of code would work:
 
 ```py
 case "Darwin": # Mac
@@ -388,3 +388,140 @@ case "Darwin": # Mac
         exit()
 ```
 
+I pushed my changes and asked for them to try using my mod.
+
+add img of that
+
+They sent back a stacktrace, notably containing this:
+```
+Traceback (most recent call last):
+  File "/Users/thelightdisk/Development/SlackMod/slack_launch.py", line 72, in <module>
+    download(libURL)
+```
+
+Meaning there was some error with my download code.
+
+To narrow down the issue, I asked them to try and run some stuff in the python terminal as a test:
+```py
+~ python3
+> from wget import download
+> wget("https://ajaxorg.github.io/ace-builds/src-min-noconflict/ace.js")
+```
+
+In response, they sent back an error containing the exact same issue
+
+![a stacktrace](https://i.imgur.com/JmXScC4.png)
+
+Given this, I knew there was some issue with `wget.download()` on MacOS.
+
+I am going to skip over around 2 hours of me having them try different download libraries in an attempt to find one that worked on mac.
+
+Eventually I came to the conclusion that I should just 
+
+```py
+# macOS is stupid and doesn't like wget's download
+def download(url):
+    if (system()=="Darwin"):
+        fileName = url.split("/")[-1]
+        sysrun(f"curl -o { fileName } \"{url}\"")
+        sleep(0.1)
+    else:
+        wgetDownload(url)
+```
+
+After that, all of the downloading part of the script worked, but then it spat out an error that `slack.app` is a directory
+
+![/Applications/Slack.app is a directory](https://i.imgur.com/5nsHVzp.png)
+
+I asked him to get the folder structure with `ls` and he did one better
+
+![](https://media.discordapp.net/attachments/1006243267756691608/1014661985780121651/Screen_Shot_2022-08-31_at_4.24.11_PM.png?width=440&height=314)
+
+Given this, I updated the Mac slack_location one last time:
+
+```py
+case "Darwin": # Mac
+    # check if slack is in the location 
+    slack_location = "/Applications/Slack.app/Contents/MacOS/Slack"
+    if (not exists(slack_location)):
+        input(ERR_SLACK_NOT_FOUND)
+        exit()
+```
+
+With that change, it finally worked:
+
+![screenshot of discord of a person's screenshot of the custom css menu](https://i.imgur.com/pXcFyQD.png)
+
+## Automatically Killing Slack
+
+Throughout having friends test the mod in the prior step, them forgetting close slack when running the script was a pretty common issue.
+
+Given that, I figured it would be a good idea to have the script do it automatically.
+
+I found some solid looking code for [killing a process with python on stackoverflow](https://stackoverflow.com/a/67509457/8133370), so I modified it a slight bit and gave credit in a comment:
+
+```py
+# Kill Slack
+# Mac and Linux have no extension on executables
+process_name = "slack"
+if (system()=="Windows"):
+    process_name = "slack.exe"
+# https://stackoverflow.com/a/67509457/8133370 under (CC BY-SA 4.0) 
+try:
+    print(f'Killing Slack Processes') 
+    for process in process_iter():
+        try:
+            if process_name == process.name() or process_name in process.cmdline():
+                args = process.cmdline()
+                if (len(args) > 4):
+                    args = args[0:3]
+                print(f'\tkilling instance - {args}')
+                process.terminate()
+        except Exception:
+            print(f"\t\tPermission Denied, Moving on.")
+except Exception:
+    print(f"Failed to get processes to kill, assuming Slack isn't open")
+```
+
+Note that instead of printing an exception stacktrace I went for 2 generic errors. This is because these errors trigger on Windows when there is no real problems:
+
+On occasion, when running the launch script on windows without Slack open, it triggered the outer try statement. Given this, I replaced the error with this:
+```
+Failed to get processes to kill, assuming Slack isn't open
+```
+
+On Windows, there are some slack processes that have elevated privileges and cant be killed by our script. When we try to kill them, it triggers the inner try statement. Thing is these processes are automatically closed when we kill the non-elevated processes. 
+
+Given that it really doesn't matter we cant kill them, I replaced the error with this:
+```
+    Permission Denied, Moving on.
+```
+
+Other those small tweaks the script from stackoverflow worked perfectly on all systems I tested.
+
+## Conclusion
+After all of that, using SlackMod is still a bit of a pain. 
+
+To install it, you have to:
+1. Download Python 3
+2. Download the mod from github
+3. Install the needed Python Libraries
+
+After you do that, every time you want to open it, you have to do the following:
+1. Open a terminal
+2. Navigate to wherever you installed the mod
+3. Run `python3 slack_launch.py`
+
+Currently, using SlackMod is a bit of a pain. 
+
+To install, you have to:
+1. Download the mod from github
+2. Install the python libraries needed
+3. Modify the hardcoded Slack install location to match your install.
+
+After you do that, every time you want to open it, you have to do the following:
+1. Open a terminal
+2. Navigate to wherever you installed the mod
+3. Run `python3 slack_launch.py`
+
+Next blog I will attempt to address this by compiling the mod's launcher into an executable. With this compiled script, it should be as simple as downloading and then double clicking to run!
