@@ -5,7 +5,7 @@ This is a continuation of my Series of Blogs documenting my process of making a 
     - how I inject into Slack
     - problem solving the unique challenges that come with client modding
     - very basic text editor that is linked to css
-- [Improving the Editor](upcoming), discusses:
+- [Improving the Editor](https://dev.to/f53/slack-mod-improving-the-editor-4hbn), discusses:
     - learning from other open source works
     - adding an editor with Ace
     - localStorage, a simple way to make saves persist.
