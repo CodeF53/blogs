@@ -500,6 +500,7 @@ Given that it really doesn't matter we cant kill them, I replaced the error with
 Other those small tweaks the script from stackoverflow worked perfectly on all systems I tested.
 
 ## Conclusion
+### Remaining issues
 After all of that, using SlackMod is still a bit of a pain. 
 
 To install it, you have to:
@@ -512,16 +513,24 @@ After you do that, every time you want to open it, you have to do the following:
 2. Navigate to wherever you installed the mod
 3. Run `python3 slack_launch.py`
 
-Currently, using SlackMod is a bit of a pain. 
+Eventually, I will attempt to address this, but solving that problem has proved VERY difficult.
 
-To install, you have to:
-1. Download the mod from github
-2. Install the python libraries needed
-3. Modify the hardcoded Slack install location to match your install.
+### Meta and Plan for next Blogs
+I originally wanted this to be a short blog covering the process of making installing and using the mod easier. But, it turned out that just fixing the launch script was a royal pain, but that has been done for nearly a week.
 
-After you do that, every time you want to open it, you have to do the following:
-1. Open a terminal
-2. Navigate to wherever you installed the mod
-3. Run `python3 slack_launch.py`
+I have spent the last week trying to find a neat way to make the mod easier to launch, while also making it easier to install. I have completely failed at that.
 
-Next blog I will attempt to address this by compiling the mod's launcher into an executable. With this compiled script, it should be as simple as downloading and then double clicking to run!
+If you care here is a quick summary of all the ideas I have gone through:
+- Make adding an OS specific script to OS's app launch directory part of the "install process".
+    - adds a lot of effort to setup process
+    - hard to explain
+    - varies wildly by OS  
+        - hundreds of ways to do on Windows, all of which feel wrong.
+- Making a separate OS specific script that automatically does the above.
+    - turns out to be so complex I don't know how to get into it.
+- Compiling python script into 3 OS specific executable files
+    - still painful to add to OS app launch directory
+    - compiling python is PAIN
+    - how the hell will electron-inject see the JS?
+
+Next blog will likely be some final cleanup to our injected javascript, which should be quickly followed by an "official" v1 release blog with a detailed install tutorial.
