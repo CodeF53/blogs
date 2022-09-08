@@ -1,10 +1,10 @@
 ## Intro:
 I have recently found myself writing the same code for fetch requests over and over again.
 
-I remembered that snippets were a thing in VSCode, so I made a couple for fetch requests
+I remembered that snippets were a thing in VSCode, so I made a couple for fetch requests, after doing so I figured I should make a blog explaining how to make snippets.
 
 ## Adding custom snippets:
-First, go into vscode.
+First, go into VSCode.
 
 File > Preferences > Configure User Snippets
 ![File > Preferences > Configure User Snippets](https://cdn.discordapp.com/attachments/1006247423313719339/1017494054214324295/unknown.png)
@@ -45,13 +45,13 @@ Save
 
 ## Using Custom Snippets:
 Start by typing the first few characters of the snippet you want to select:
-![vsCode JS file, "fet" is typed, with suggestions "fetch","fetch-add","fetch-edit","fetch-patch","fetch-remove", "fetch" is selected](https://i.imgur.com/O7fHdrd.png)
+![VSCode JS file, "fet" is typed, with suggestions "fetch","fetch-add","fetch-edit","fetch-patch","fetch-remove", "fetch" is selected](https://i.imgur.com/O7fHdrd.png)
 
 Press the down arrow key till the snippet you want to use is highlighted:
 ![above image, but now "fetch-edit" is now selected](https://i.imgur.com/lHbgMNe.png)
 
 Press tab:
-![vsCode JS file, it now has a fetch edit statement with temporary texts: "url", "id", "patchObject", url is selected](https://i.imgur.com/1mXU8UX.png)
+![VSCode JS file, it now has a fetch edit statement with temporary texts: "url", "id", "patchObject", url is selected](https://i.imgur.com/1mXU8UX.png)
 
 Type in the corresponding value of the currently selected text:
 ![above image, but the temporary "url" text now says localhost:3000](https://i.imgur.com/zjRzwCv.png)
