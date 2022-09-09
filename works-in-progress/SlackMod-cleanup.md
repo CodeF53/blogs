@@ -93,17 +93,9 @@ I mentioned this briefly in my first blog on SlackMod, when you click the Custom
 
 I spent ages trying to fix this before and eventually gave up.
 
-Thinking long and hard about the issue, I came up with a brute force a solution.
+Giving the problem some more thought, I decided to start by preventing the error that happens when you click a tab.
 
-> Why don't we just close the Preferences, reopen it, then open the tab the user clicked?
-
-Looking into how to simulate the clicks I needed for this, I came across the [docs for `EventTarget.dispatchEvent()`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent)
-
-As a quick test, I tried to close the preferences modal using this command in Slack's dev tools.
-
-![](https://images2.imgbox.com/a7/2e/vtihfCNS_o.gif)
-
-Given that success, I wrote up the following javascript:
+I figured I could just do something like this
 
 ```js
 customTab.addEventListener("click", ()=>{
@@ -113,37 +105,156 @@ customTab.addEventListener("click", ()=>{
         tab.addEventListener("click", (event)=>{
             // prevent the crash that normally happens
             event.stopPropagation()
-            // close the preferences window
-            document.querySelector(`[aria-label="Close"]`).dispatchEvent(new Event("click", {bubbles:true}))
-            // re-open the preferences window
-            document.querySelector(".p-ia__nav__user__button").dispatchEvent(new Event("click", {bubbles:true}))
-            document.querySelector("div.ReactModalPortal div:nth-child(7) div").dispatchEvent(new Event("click", {bubbles:true}))
-            // go to the tab that was clicked
-            tab.dispatchEvent(new Event("click", {bubbles:true}))
         })
     })
 }
 ```
 
-This led to a rather interesting bug. Slack completely froze for around half a second, then the preferences screen was switched to the default "Notifications" tab, with lots of Custom CSS tabs.
+But, no, for some reason event.stopPropagation doesn't do what its supposed to. After a lot of thought of other ways to solve the issue, I remembered how I removed event listeners in a lab before to solve this exact problem!
 
-![](https://images2.imgbox.com/fb/99/stORn974_o.gif)
-
-I spent 30 minutes trying to figure out why this was happening. Turns out, I was triggering my own code that detects clicking the `Preferences` tab, causing an infinite loop. The freeze was my code recursively triggering itself until it reached a stack overflow.
-
-To fix this, I just added a check to see if the preferences menu click was actually trusted. Real click events have `event.isTrusted` true, while our simulated clicks have `event.isTrusted` false.
+By replacing an element with a clone of itself, you effectively remove all of that element's event listeners:
 
 ```js
-document.addEventListener("click", (event) => {
-    let element = event.target 
-    if (element.classList[0]=="c-menu_item__label" && element.innerHTML == "Preferences" && event.isTrusted) {
-        setTimeout(function () {
-            if (document.querySelector(".p-prefs_dialog__menu") != null) {
-                addSettingsTab()
-            }
-        }, 50);
-    }
+element.parentElement.replaceChild(element.cloneNode(true), element)
+```
+
+Given this, removing all of the click event listeners from the tabs is easy!
+
+First, to iterate through all our tabs, we have to make an iterable array of them. Spreading our tabList's children, then re-wrapping it as an array works for this:
+```js
+([...settingsTabList.children])
+```
+
+Then, we can do our remove event listener trick on every one of these tabs:
+```js
+customTab.addEventListener("click", ()=>{
+    ...
+    ([...settingsTabList.children]).map((tab)=>{
+        // remove old click event listeners
+        tab.parentElement.replaceChild(tab.cloneNode(true), tab)
+    })
 })
 ```
-along with that, I added a call to our `addSettingsTab()` so the Custom CSS tab would be there.
- 
+
+Now that clicking the settings tabs doesn't immediately crash the Preferences screen, we can use our own method to select the tab.
+
+The only way I thought of to "switch" tabs was pretty brute force:
+
+> Why don't we just close the Preferences, reopen it, then open the tab the user clicked?
+
+Looking into how to simulate the clicks I needed for this, I came across the [docs for `EventTarget.dispatchEvent()`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/dispatchEvent)
+
+As a quick test, I tried to close the preferences modal using this command in Slack's dev tools.
+
+![](https://images2.imgbox.com/a7/2e/vtihfCNS_o.gif)
+
+Given that success, I made a helper function for clicking elements and tried using it to pull up the correct screen.
+
+```js
+const clickNodeBySelector = (selector) => 
+    document.querySelector(selector).dispatchEvent(new Event("click", {bubbles:true}))
+...
+// replace tab click events with our own click event for switching tabs
+([...settingsTabList.children]).map((tab)=>{
+    // remove old click event listeners
+    tab.parentElement.replaceChild(tab.cloneNode(true), tab)
+    // add our own click event
+    const tabID = tab.id
+    document.getElementById(tabID).addEventListener("click", (event)=>{
+        if (event.isTrusted) {
+            // close the preferences screen
+            clickNodeBySelector(`[aria-label="Close"]`)
+            // re-open the preferences window
+            clickNodeBySelector(".p-ia__nav__user__button")
+            clickNodeBySelector("div.ReactModalPortal div:nth-child(7) div")
+            // go to the tab that was clicked
+            clickNodeBySelector("#"+tabID)
+            // add back the custom css tab
+            addSettingsTab()
+        }
+    })
+})
+```
+
+This almost worked, but it wasn't switching to a tab after entering the preferences menu.
+
+This is because it's clicking the tab on the preferences screen that we are closing.
+
+I fixed this by adding a slight delay to it:
+```js
+setTimeout(()=>{clickNodeBySelector("#"+tabID)},delay)
+```
+
+What I found annoying is that sometimes this would work with a delay of just 5, and other times I need a delay of atleast 50, which starts to get noticeable.
+
+I actually already fixed a similar problem to this with the `addSettingsTab()` function. I check if the elements I need exist, and if they dont, I try again in a bit.
+
+```js
+function addSettingsTab() {
+    if (document.querySelector(".p-prefs_dialog__menu") !== null) {
+        ...
+    } else {
+        setTimeout(()=>{addSettingsTab()}, 1)
+    }
+}
+``` 
+
+This effectively makes it run once every millisecond until the element it hooks into exists.
+
+Given that we need this exact same solution again, I broke it out into an abstract function:
+```js
+function tryTillTrue(expression, callback) {
+    setTimeout(()=>{ 
+        if (expression()) { callback() } 
+        else { tryTillTrue(expression,callback)}
+    }, 1)
+}
+```
+
+Heres how it's implemented in `addSettingsTab()`:
+```js
+function addSettingsTab() {
+    tryTillTrue(()=>document.querySelector(".p-prefs_dialog__menu") !== null, ()=>{
+        ...
+    })
+}
+```
+
+We still need a little wait before trying to click into the tab because we still have the problem of clicking the one on the window we are closing:
+```js
+// go to the tab that was clicked
+tryTillTrue(()=>document.querySelector("#"+tabID) !== null, 
+    ()=>clickNodeBySelector("#"+tabID))
+```
+
+With that, it works!
+
+![](https://imgbox.com/VQki9HVh)
+
+But, it does look pretty jarring as the background flashes and the window instantly shrinks. To fix this, I added a bit of styling to make the window ease in:
+
+```js
+// go to the tab that was clicked
+tryTillTrue(()=>document.querySelector("#"+tabID) !== null,
+    ()=>clickNodeBySelector("#"+tabID), 0.025)
+// add back the custom css tab
+addSettingsTab()
+
+// make it smoothly shrink back to normal window size
+setTimeout(()=>{
+    ["max-width","width","max-height","height"].forEach(
+        style => document.querySelector(`div[aria-label="Preferences"]`).style[style] = "100%")
+
+    setTimeout(()=>{
+        document.querySelector(`div[aria-label="Preferences"]`).style["transition"] = "500ms ease all"
+        document.querySelector(`div[aria-label="Preferences"]`).style["height"]="700px"
+        document.querySelector(`div[aria-label="Preferences"]`).style["width"]="800px"
+    },0.025)
+},0.025)
+```
+
+Yeah... that code looks absolutely disgusting, but it works:
+
+![](https://images2.imgbox.com/59/1c/GecYJbnJ_o.gif)
+
+Ok yea it renders 2 wrong frames, sue me.
