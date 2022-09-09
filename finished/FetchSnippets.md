@@ -1,7 +1,7 @@
 ## Intro:
 I have recently found myself writing the same code for fetch requests over and over again.
 
-I remembered that snippets were a thing in VSCode, so I made a couple for fetch requests, after doing so I figured I should make a blog explaining how to make snippets.
+I remembered that snippets were a thing in VSCode, so I made a couple for fetch requests. After doing so I figured I should make a blog explaining how to make snippets.
 
 ## Adding custom snippets:
 First, go into VSCode.
@@ -12,9 +12,9 @@ File > Preferences > Configure User Snippets
 Click "New Global Snippets file..."
 ![Mouse cursor over "New Global Snippets file..."](https://cdn.discordapp.com/attachments/1006247423313719339/1017494054541475911/unknown.png)
 
-Give the file some appropriate name, I used `jsFetch.code-snippets`
+Give the file some appropriate name (I used `jsFetch.code-snippets`)
 
-Paste in some snippet code
+Paste in some snippet code:
 
 ```json
 {
