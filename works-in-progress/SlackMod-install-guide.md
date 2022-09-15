@@ -52,18 +52,53 @@ Doing this every time you want to launch Slack can be cumbersome, to make it eas
 - [Linux Launch Scripts](#linux-launch-scripts)
 ## Windows Launch Scripts:
 ## MacOS Launch Scripts:
+This is theory crafted, not tested.
+
+If you are reading this right now, you are testing.\
+Please report back to CodeF53#0241 with screenshots of your terminal!
+
+Start by opening a terminal on your desktop or wherever you want a shortcut for Slack Mod.
+
+Run the following to create a shortcut:
+```bash
+echo '#!/bin/bash' > SlackMod.command
+echo "cd [path to where you cloned slackmod]" >> SlackMod.command
+echo "python3 slack_launch.py" >> SlackMod.command
+chmod +x SlackMod.command
+```
+
+Make sure to fill `cd [path to where you cloned slackmod]` with a vaild path, for example:
+```
+cd /home/f53/Projects/SlackMod
+```
+**TODO: Replace with example path for macos desktop**
+
+To double check your work, run the following command:
+```bash
+cat SlackMod.command
+```
+
+It should output something like:
+```bash
+#!/bin/bash
+cd /home/f53/Projects/SlackMod
+python3 slack_launch.py
+```
+
+Double clicking this will launch Slack Mod!
+
 ## Linux Launch Scripts:
 Start by starting a superuser shell because we will be creating files where we need it:
-```
+```bash
 sudo -i
 ```
 Then, cd to wherever your distro stores `.desktop` files for it's start menu, for manjaro this is `/usr/share/applications`
-```
+```bash
 cd /usr/share/applications
 ```
 
-Then, make `SlackMod.desktop` with this
-```
+Then, make `SlackMod.desktop` with this command:
+```bash
 echo "Type=Application
 Icon=slack
 Name=SlackMod
@@ -80,9 +115,10 @@ Path=/home/f53/Projects/SlackMod
 ```
 
 Double check your work by trying to get the contents of the new desktop file
-```
+```bash
 cat SlackMod.desktop
 ```
 
 Your output should look like this:
+
 ![newlines splitting all these: Type=Application Icon=slack Name=SlackMod Terminal=false Hidden=false Keywords=slack;slackmod Exec=python3 slack_launch.py Path=/home/f53/Projects/SlackMod](https://i.imgur.com/ra3eUAW.png)
