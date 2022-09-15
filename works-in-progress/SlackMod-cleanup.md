@@ -1,11 +1,11 @@
 ## Intro
-After [improving the launcher for my Slack Mod](), its almost ready for release! Before that, I would like to do a couple of tweaks and adjustments to make the whole mod feel a bit more polished.
+After [improving the launcher for my Slack Mod](https://dev.to/f53/slack-mod-improving-the-launcher-30g0), it's almost ready for release! Before that, I would like to add a couple of tweaks and adjustments to make the whole mod feel a bit more polished.
 
 ## Editor Animation:
 Slack's preferences window is pretty small, which works perfectly for the menus it has by default. Problem is this can feel a little cramped when writing code:
 ![](https://i.imgur.com/0mwRDBL.png)
 
-At the end of my first SlackMod blog, I wrote a little bit of CSS into the editor to both demonstrate it's use and solve this problem:
+At the end of my first SlackMod blog, I wrote a little bit of CSS into the editor to both demonstrate its use and solve this problem:
 ```css
 /* Increase width and height of Preferences to allow more room for code */
 body > div.c-sk-modal_portal > div > div {
@@ -31,7 +31,7 @@ customTab.addEventListener("click", ()=>{
 }
 ```
 
-This can feel a bit jarring because Preferences screen instantly "snaps" to taking up the whole screen.
+This can feel a bit jarring because the Preferences screen instantly "snaps" to taking up the whole screen.
 
 Given that, I added a bit of easing to the hardcoded styling:
 
@@ -46,7 +46,7 @@ That feels really nice, but then our Ace editor doesn't use all the space we are
 
 ![](https://images2.imgbox.com/fb/59/xAeNI0ll_o.gif)
 
-I thought this would be a pretty simple fix same idea as the other hardcoded stuff
+I thought this would be a pretty simple fix, so I went for the same idea as the other hardcoded stuff:
 ```js
 customTab.addEventListener("click", ()=>{
     ...
@@ -58,11 +58,11 @@ customTab.addEventListener("click", ()=>{
 }
 ```
 
-But that doesn't work, as Ace has some internal CSS determining it's size that takes a very high priority. This is set once when the editor is initialized to fit the div its put in. 
+But that doesn't work, as Ace has some internal CSS determining its size that takes a very high priority. This is set once when the editor is initialized to fit the `div` it's put in.
 
-Looking at [Ace's docs](https://ace.c9.io/#nav=howto) we can call `editor.resize()` to make the editor expand to fit it's containing div.
+According to [Ace's docs](https://ace.c9.io/#nav=howto) we can call `editor.resize()` to make the editor expand to fit its parent `div`.
 
-Given that we expand the div containing the div for 500 milliseconds, we could just wait 500 ms, then call `editor.resize()`:
+In theory, since we're currently expanding the `div` containing the editor for 500 milliseconds, we could just wait 500 ms, then call `editor.resize()`:
 ```js
 setTimeout(()=>{editor.resize()}, 500);
 ```
@@ -87,7 +87,7 @@ Why 5 milliseconds? It is fast enough to look smooth at even 144fps, while also 
 [Hey, thats pretty good!](https://youtu.be/JeimE8Wz6e4)
 
 ## Error on switching to other tabs:
-I mentioned this briefly in my first blog on SlackMod, when you click the Custom CSS tab, then select a different category, the Preferences Modal crashes.
+I mentioned this briefly in my first blog on SlackMod: when you click the Custom CSS tab, then select a different category, the Preferences modal crashes.
 
 ![](https://images2.imgbox.com/8f/b6/0HhNjOJG_o.gif)
 
@@ -110,7 +110,7 @@ customTab.addEventListener("click", ()=>{
 }
 ```
 
-But, no, for some reason event.stopPropagation doesn't do what its supposed to. After a lot of thought of other ways to solve the issue, I remembered how I removed event listeners in a lab before to solve this exact problem!
+But, no, for some reason `event.stopPropagation()` doesn't do what its supposed to. After a lot of thought of other ways to solve the issue, I remembered how I removed event listeners in a lab before to solve this exact problem!
 
 By replacing an element with a clone of itself, you effectively remove all of that element's event listeners:
 
@@ -125,7 +125,7 @@ First, to iterate through all our tabs, we have to make an iterable array of the
 ([...settingsTabList.children])
 ```
 
-Then, we can do our remove event listener trick on every one of these tabs:
+Then, we can do our "remove event listener" trick on each of these tabs:
 ```js
 customTab.addEventListener("click", ()=>{
     ...
@@ -151,7 +151,7 @@ As a quick test, I tried to close the preferences modal using this command in Sl
 Given that success, I made a helper function for clicking elements and tried using it to pull up the correct screen.
 
 ```js
-const clickNodeBySelector = (selector) => 
+const clickNodeBySelector = (selector) =>
     document.querySelector(selector).dispatchEvent(new Event("click", {bubbles:true}))
 ...
 // replace tab click events with our own click event for switching tabs
@@ -178,7 +178,7 @@ const clickNodeBySelector = (selector) =>
 
 This almost worked, but it wasn't switching to a tab after entering the preferences menu.
 
-This is because it's clicking the tab on the preferences screen that we are closing.
+This is because it's clicking the tab on the Preferences screen that we are _closing._
 
 I fixed this by adding a slight delay to it:
 ```js
@@ -197,15 +197,15 @@ function addSettingsTab() {
         setTimeout(()=>{addSettingsTab()}, 1)
     }
 }
-``` 
+```
 
 This effectively makes it run once every millisecond until the element it hooks into exists.
 
 Given that we need this exact same solution again, I broke it out into an abstract function:
 ```js
 function tryTillTrue(expression, callback) {
-    setTimeout(()=>{ 
-        if (expression()) { callback() } 
+    setTimeout(()=>{
+        if (expression()) { callback() }
         else { tryTillTrue(expression,callback)}
     }, 1)
 }
@@ -223,13 +223,13 @@ function addSettingsTab() {
 We still need a little wait before trying to click into the tab because we still have the problem of clicking the one on the window we are closing:
 ```js
 // go to the tab that was clicked
-tryTillTrue(()=>document.querySelector("#"+tabID) !== null, 
+tryTillTrue(()=>document.querySelector("#"+tabID) !== null,
     ()=>clickNodeBySelector("#"+tabID))
 ```
 
 With that, it works!
 
-![](https://imgbox.com/VQki9HVh)
+![](https://images2.imgbox.com/0d/89/VQki9HVh_o.gif)
 
 But, it does look pretty jarring as the background flashes and the window instantly shrinks. To fix this, I added a bit of styling to make the window ease in:
 
@@ -264,9 +264,9 @@ If you are writing Custom CSS, the devtools are kinda required.
 
 By default Slack allows you to use the command `/slackdevtools` to open them, but that is really slow in comparison to using a keyboard shortcut like <kbd>f12</kbd> or <kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>i</kbd>.
 
-I am going to skip past my research for how to open devtools. This is because it came up fruitless and eventually I decided to brute force it with fake user input.
+I am going to skip past my research for how to open devtools, because it came up fruitless and eventually I decided to brute force it with fake user input.
 
-To start off with, I tried selecting the chat window and adding some text to it:
+To begin, I tried selecting the chat window and adding some text to it:
 ```js
 document.querySelector(".ql-editor").innerText = "/slackdevtools"
 ```
@@ -290,16 +290,16 @@ This does end up clearing the chatbox if you already have something in it, so I 
 ```js
 // save contents of chat editor
 let oldText = document.querySelector(".ql-editor").innerText
-// type and send slackdevtools command 
+// type and send slackdevtools command
 document.querySelector(".ql-editor").innerText = "/slackdevtools"
 setTimeout(()=>{clickNodeBySelector(`[aria-label="Send now"]`)}, 1)
 // restore old contents of chat editor
 setTimeout(()=>{document.querySelector(".ql-editor").innerText = oldText}, 100)
 ```
 
-This didnt end up consistent until I had the delay set to 100ms on the timeout for putting text back into the box
+This didnt end up consistent until I had the delay set to 100ms on the timeout for putting text back into the box.
 
-To hook this up to key combos, I added an event listener, initially using `"keypress"`
+To hook this up to key combos, I added an event listener, initially using `"keypress"`:
 ```js
 document.addEventListener("keypress", (event) => {
     console.log(event)
@@ -307,7 +307,7 @@ document.addEventListener("keypress", (event) => {
 
 In testing, I found that for some reason this didnt log presses of the function keys, which we need for triggering on <kbd>f12</kbd>.
 
-Given that, I switched to `"keyup"`
+Given that, I switched to `"keyup"`:
 ```js
 document.addEventListener("keyup", (event) => {
     console.log(event)
@@ -338,19 +338,19 @@ I started by destructuring the event out into the variables we care about:
 document.addEventListener("keyup", ({ code, ctrlKey, shiftKey }) => {
 ```
 
-Then a simple check if the keyCombo is one we care about: 
+Then a simple check if the key combo is one we care about:
 ```js
 if (code === "F12" || (ctrlKey && shiftKey && code === "KeyI")) {
 ```
 
-Inside I put the code we ended up with for sending the command and restoring chat contents, leading to the whole thing looking like this:
+Inside I put the code we ended up with for sending the command and restoring chat contents, leading to a final result that looks like this:
 
 ```js
 document.addEventListener("keyup", ({ code, ctrlKey, shiftKey }) => {
     if (code === "F12" || (ctrlKey && shiftKey && code === "KeyI")) {
         // save contents of chat editor
         let oldText = document.querySelector(".ql-editor").innerText
-        // type and send slackdevtools command 
+        // type and send slackdevtools command
         document.querySelector(".ql-editor").innerText = "/slackdevtools"
         setTimeout(()=>{clickNodeBySelector(`[aria-label="Send now"]`)}, 1)
         // restore old contents of chat editor
@@ -358,4 +358,3 @@ document.addEventListener("keyup", ({ code, ctrlKey, shiftKey }) => {
     }
 });
 ```
-
