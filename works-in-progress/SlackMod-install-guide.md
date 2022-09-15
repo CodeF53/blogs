@@ -41,7 +41,7 @@ python3 -m pip install -r requirements.txt
 
 ## Running Slack Mod
 ### Manually
-To start the mod, run the Python launch script inside the directory you just cloned SlackMod:
+To start the mod, run the Python launch script in your SlackMod directory:
 ```
 python3 slack_launch.py
 ```
@@ -65,16 +65,15 @@ Start by opening a terminal on your desktop or wherever you want a shortcut for 
 Run the following to create a shortcut:
 ```bash
 echo '#!/bin/bash' > SlackMod.command
-echo "cd [path to where you cloned slackmod]" >> SlackMod.command
+echo "cd [path to your slackmod directory]" >> SlackMod.command
 echo "python3 slack_launch.py" >> SlackMod.command
 chmod +x SlackMod.command
 ```
 
-Make sure to fill `cd [path to where you cloned slackmod]` with a vaild path, for example:
+Make sure to fill `cd [path to your slackmod directory]` with a vaild path, for example:
 ```
-cd /home/f53/Projects/SlackMod
+cd /Users/F53/Development/code/SlackMod
 ```
-**TODO: Replace with example path for macos desktop**
 
 To double check your work, run the following command:
 ```bash
@@ -84,7 +83,7 @@ cat SlackMod.command
 It should output something like:
 ```bash
 #!/bin/bash
-cd /home/f53/Projects/SlackMod
+cd /Users/F53/Development/code/SlackMod
 python3 slack_launch.py
 ```
 
@@ -110,10 +109,10 @@ Terminal=false
 Hidden=false
 Keywords=slack;slackmod
 Exec=python3 slack_launch.py
-Path=[path to where you cloned slackmod]" > SlackMod.desktop
+Path=[path to your slackmod directory]" > SlackMod.desktop
 ```
 
-Make sure to fill `Path=[path to where you cloned slackmod]` with a vaild path, for example:
+Make sure to fill `Path=[path to your slackmod directory]` with a vaild path, for example:
 ```
 Path=/home/f53/Projects/SlackMod
 ```
@@ -128,7 +127,7 @@ Your output should look like this:
 ![newlines splitting all these: Type=Application Icon=slack Name=SlackMod Terminal=false Hidden=false Keywords=slack;slackmod Exec=python3 slack_launch.py Path=/home/f53/Projects/SlackMod](https://i.imgur.com/ra3eUAW.png)
 
 ## Updating Slack Mod:
-If you see that there have been new updates to the mod you wan to try out, updating is pretty easy! Simpily open a terminal in the directory you cloned SlackMod and run the following command:
+If you see that there have been new updates to the mod you wan to try out, updating is pretty easy! Simpily open a terminal in your SlackMod directory and run the following command:
 ```
 git pull
 ```
