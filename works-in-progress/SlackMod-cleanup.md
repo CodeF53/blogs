@@ -258,3 +258,104 @@ Yeah... that code looks absolutely disgusting, but it works:
 ![](https://images2.imgbox.com/59/1c/GecYJbnJ_o.gif)
 
 Ok yea it renders 2 wrong frames, sue me.
+
+## Devtools Shortcuts
+If you are writing Custom CSS, the devtools are kinda required.
+
+By default Slack allows you to use the command `/slackdevtools` to open them, but that is really slow in comparison to using a keyboard shortcut like <kbd>f12</kbd> or <kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>i</kbd>.
+
+I am going to skip past my research for how to open devtools. This is because it came up fruitless and eventually I decided to brute force it with fake user input.
+
+To start off with, I tried selecting the chat window and adding some text to it:
+```js
+document.querySelector(".ql-editor").innerText = "/slackdevtools"
+```
+
+That worked, so then I simulated a click on the send button:
+```js
+clickNodeBySelector(`[aria-label="Send now"]`)
+```
+
+That also worked!
+
+Once I put them together, they didnt work, so I added a bit of delay to clicking the button:
+```js
+document.querySelector(".ql-editor").innerText = "/slackdevtools"
+setTimeout(()=>{clickNodeBySelector(`[aria-label="Send now"]`)}, 1)
+```
+
+And that worked perfectly!
+
+This does end up clearing the chatbox if you already have something in it, so I added 2 extra lines to save and restore the contents of it:
+```js
+// save contents of chat editor
+let oldText = document.querySelector(".ql-editor").innerText
+// type and send slackdevtools command 
+document.querySelector(".ql-editor").innerText = "/slackdevtools"
+setTimeout(()=>{clickNodeBySelector(`[aria-label="Send now"]`)}, 1)
+// restore old contents of chat editor
+setTimeout(()=>{document.querySelector(".ql-editor").innerText = oldText}, 100)
+```
+
+This didnt end up consistent until I had the delay set to 100ms on the timeout for putting text back into the box
+
+To hook this up to key combos, I added an event listener, initially using `"keypress"`
+```js
+document.addEventListener("keypress", (event) => {
+    console.log(event)
+```
+
+In testing, I found that for some reason this didnt log presses of the function keys, which we need for triggering on <kbd>f12</kbd>.
+
+Given that, I switched to `"keyup"`
+```js
+document.addEventListener("keyup", (event) => {
+    console.log(event)
+```
+
+Here are the highlights of the events this logs when we press the keycombos we want to use.
+
+<kbd>f12</kbd>:
+```js
+KeyboardEvent {
+    code: "F12"
+}
+```
+
+<kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>i</kbd>:
+```js
+KeyboardEvent {
+    code: "KeyI",
+    ctrlKey: true,
+    shiftKey: true
+}
+```
+
+Given this, I wrote out the code for binding the devtools hotkeys.
+
+I started by destructuring the event out into the variables we care about:
+```js
+document.addEventListener("keyup", ({ code, ctrlKey, shiftKey }) => {
+```
+
+Then a simple check if the keyCombo is one we care about: 
+```js
+if (code === "F12" || (ctrlKey && shiftKey && code === "KeyI")) {
+```
+
+Inside I put the code we ended up with for sending the command and restoring chat contents, leading to the whole thing looking like this:
+
+```js
+document.addEventListener("keyup", ({ code, ctrlKey, shiftKey }) => {
+    if (code === "F12" || (ctrlKey && shiftKey && code === "KeyI")) {
+        // save contents of chat editor
+        let oldText = document.querySelector(".ql-editor").innerText
+        // type and send slackdevtools command 
+        document.querySelector(".ql-editor").innerText = "/slackdevtools"
+        setTimeout(()=>{clickNodeBySelector(`[aria-label="Send now"]`)}, 1)
+        // restore old contents of chat editor
+        setTimeout(()=>{document.querySelector(".ql-editor").innerText = oldText}, 100)
+    }
+});
+```
+
