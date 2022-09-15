@@ -50,8 +50,11 @@ Doing this every time you want to launch Slack can be cumbersome, to make it eas
 - [Windows Launch Scripts](#windows-launch-scripts)
 - [MacOS Launch Scripts](#macos-launch-scripts)
 - [Linux Launch Scripts](#linux-launch-scripts)
-## Windows Launch Scripts:
-## MacOS Launch Scripts:
+## Making Launch Scripts:
+### Windows Launch Scripts:
+
+
+### MacOS Launch Scripts:
 This is theory crafted, not tested.
 
 If you are reading this right now, you are testing.\
@@ -87,7 +90,7 @@ python3 slack_launch.py
 
 Double clicking this will launch Slack Mod!
 
-## Linux Launch Scripts:
+### Linux Launch Scripts:
 Start by starting a superuser shell because we will be creating files where we need it:
 ```bash
 sudo -i
@@ -99,7 +102,8 @@ cd /usr/share/applications
 
 Then, make `SlackMod.desktop` with this command:
 ```bash
-echo "Type=Application
+echo "[Desktop Entry]
+Type=Application
 Icon=slack
 Name=SlackMod
 Terminal=false
@@ -122,3 +126,12 @@ cat SlackMod.desktop
 Your output should look like this:
 
 ![newlines splitting all these: Type=Application Icon=slack Name=SlackMod Terminal=false Hidden=false Keywords=slack;slackmod Exec=python3 slack_launch.py Path=/home/f53/Projects/SlackMod](https://i.imgur.com/ra3eUAW.png)
+
+## Updating Slack Mod:
+If you see that there have been new updates to the mod you wan to try out, updating is pretty easy! Simpily open a terminal in the directory you cloned SlackMod and run the following command:
+```
+git pull
+```
+
+## Conclusion:
+Give this a blog a reaction and star SlackMod's github page so I can get some dopamine from this project.
