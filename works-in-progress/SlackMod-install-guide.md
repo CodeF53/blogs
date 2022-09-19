@@ -64,7 +64,7 @@ Start by opening a terminal on your desktop or wherever you want a shortcut for 
 
 Run the following to create a shortcut:
 ```bash
-echo '#!/bin/bash' > SlackMod.command
+echo '#!/bin/sh' > SlackMod.command
 echo "cd [path to your slackmod directory]" >> SlackMod.command
 echo "python3 slack_launch.py" >> SlackMod.command
 chmod +x SlackMod.command

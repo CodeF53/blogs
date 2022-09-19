@@ -358,3 +358,8 @@ document.addEventListener("keyup", ({ code, ctrlKey, shiftKey }) => {
     }
 });
 ```
+
+## Fixing Mac Kill commands:
+In testing for my next blog I realized that my kill commands didnt work on mac.
+
+PAIN
