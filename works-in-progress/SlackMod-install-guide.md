@@ -52,7 +52,46 @@ Doing this every time you want to launch Slack can be cumbersome, to make it eas
 - [Linux Launch Scripts](#linux-launch-scripts)
 ## Making Launch Scripts:
 ### Windows Launch Scripts:
+Right click `slackmod.bat` and click `Create shortcut`:
 
+![](https://i.imgur.com/SMCpfSB.png)
+
+Press the windows key, type `slack`, then right click Slack and click `Open file location`:
+
+![](https://i.imgur.com/59ffRGA.png)
+
+Click and drag `slackmod.bat - Shortcut` to the folder you just opened.
+
+![](https://i.imgur.com/vwILm8S.png)
+
+Now, when you search "slack" in the windows search thing `slackmod.bat` shows up.
+
+#### Optional - Making it look a tad nicer:
+If you dont want it to be called `slackmod.bat` or want it to have a nice icon, follow this:
+
+Right click `slackmod.bat - Shortcut`, click `Rename`, then type in whatever you want it to show up as:
+
+![](https://i.imgur.com/0L9TPzP.png)
+
+Right click whatever you just renamed the shortcut to, click `Properties`, then click `Change Icon...`
+
+![](https://i.imgur.com/2RlH4P2.png)
+
+![](https://i.imgur.com/uaQ2UOY.png)
+
+Then, paste the following into the bar below `Look for icons in this file:`, making sure to replace it's old contents.
+
+```
+%USERPROFILE%\AppData\Local\slack\slack.exe
+```
+
+Then, click `OK` > Apply > `OK`
+
+![](https://i.imgur.com/tQ9Lnuu.png)
+
+#### Putting it on the desktop:
+
+Click your SlackMod shortcut, <kbd>ctrl</kbd>+<kbd>c</kbd>, click on your desktop, <kbd>ctrl</kbd>+<kbd>v</kbd>
 
 ### MacOS Launch Scripts:
 I am currently working on finding a neat way to make launch scripts on macos.
@@ -82,7 +121,7 @@ Exec=python3 slack_launch.py
 Path=[path to your slackmod directory]" > SlackMod.desktop
 ```
 
-Make sure to fill `Path=[path to your slackmod directory]` with a vaild path, for example:
+Make sure to fill `Path=[path to your slackmod directory]` with a valid path, for example:
 ```
 Path=/home/f53/Projects/SlackMod
 ```
@@ -97,7 +136,7 @@ Your output should look like this:
 ![newlines splitting all these: Type=Application Icon=slack Name=SlackMod Terminal=false Hidden=false Keywords=slack;slackmod Exec=python3 slack_launch.py Path=/home/f53/Projects/SlackMod](https://i.imgur.com/ra3eUAW.png)
 
 ## Updating Slack Mod:
-If you see that there have been new updates to the mod you wan to try out, updating is pretty easy! Simply open a terminal in your SlackMod directory and run the following command:
+If you see that there have been new updates to the mod you want to try out, updating is pretty easy! Simply open a terminal in your SlackMod directory and run the following command:
 ```
 git pull
 ```
