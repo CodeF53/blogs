@@ -55,39 +55,9 @@ Doing this every time you want to launch Slack can be cumbersome, to make it eas
 
 
 ### MacOS Launch Scripts:
-This is theory crafted, not tested.
+I am currently working on finding a neat way to make launch scripts on macos.
 
-If you are reading this right now, you are testing.\
-Please report back to CodeF53#0241 with screenshots of your terminal!
-
-Start by opening a terminal on your desktop or wherever you want a shortcut for Slack Mod.
-
-Run the following to create a shortcut:
-```bash
-echo '#!/bin/sh' > SlackMod.command
-echo "cd [path to your slackmod directory]" >> SlackMod.command
-echo "python3 slack_launch.py" >> SlackMod.command
-chmod +x SlackMod.command
-```
-
-Make sure to fill `cd [path to your slackmod directory]` with a vaild path, for example:
-```
-cd /Users/F53/Development/code/SlackMod
-```
-
-To double check your work, run the following command:
-```bash
-cat SlackMod.command
-```
-
-It should output something like:
-```bash
-#!/bin/bash
-cd /Users/F53/Development/code/SlackMod
-python3 slack_launch.py
-```
-
-Double clicking this will launch Slack Mod!
+Currently, if you are on mac, you just have to live with closing slack manually and running the command.
 
 ### Linux Launch Scripts:
 Start by starting a superuser shell because we will be creating files where we need it:
@@ -127,10 +97,7 @@ Your output should look like this:
 ![newlines splitting all these: Type=Application Icon=slack Name=SlackMod Terminal=false Hidden=false Keywords=slack;slackmod Exec=python3 slack_launch.py Path=/home/f53/Projects/SlackMod](https://i.imgur.com/ra3eUAW.png)
 
 ## Updating Slack Mod:
-If you see that there have been new updates to the mod you wan to try out, updating is pretty easy! Simpily open a terminal in your SlackMod directory and run the following command:
+If you see that there have been new updates to the mod you wan to try out, updating is pretty easy! Simply open a terminal in your SlackMod directory and run the following command:
 ```
 git pull
 ```
-
-## Conclusion:
-Give this a blog a reaction and star SlackMod's github page so I can get some dopamine from this project.
