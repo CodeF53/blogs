@@ -1,12 +1,12 @@
 ## Intro
-If you are taking any form of programming course, you are probably frequently copy pasting commands from course assignments. This is just a couple of tips so following along with these is less of a pain.
+If you are taking any programming course, you probably frequently copy paste commands from course assignments into your terminal. This is just a couple of tips so following along with these is less of a pain.
 
 ## Quick copy pasting
 When possible, viewing your lesson's `readme.md`s on github is preferred, as they add a nice button for copying the contents of a code block, which cuts out the pain of manually selecting all of a code block's contents.
 
 ![a mouse cursor over a copy button in a github codeblock](https://i.imgur.com/7d1d4XT.png)
 
-## Evil command prefix fix
+## Command prefix fix
 ### The problem:
 Code blocks that you run in a terminal are prefixed with a $ to indicate where you run it.
 ```sh
