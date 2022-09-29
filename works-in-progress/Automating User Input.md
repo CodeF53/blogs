@@ -47,13 +47,16 @@ Sure enough, what I did was specifically listed in the **Dont's** section
 ## Querying page elements
 To send a connection there are two things we need to be able to find on the page:
 
-The actual connect buttons
+The actual connect buttons:
+
 ![](https://i.imgur.com/SmGVC9N.png)
 
-And the button to confirm your connection request:
+The button to confirm your connection request:
+
 ![](https://i.imgur.com/tSjbaAg.png)
 
-After sending connections to everyone on a page, we need to be able to find the next page button:
+And, after sending connections to everyone on a page, we need to be able to find the next page button:
+
 ![](https://i.imgur.com/qNebM1B.png)
 
 There is 2 very common javascript methods to find element(s):
@@ -101,8 +104,6 @@ If we were to select the right arrow, or "later trips" button, using class names
 
 This is because big companies have decided to start obfuscating class names into random sets of alphanumeric characters.
 
-While there are a LOT of css selectors, we really only need one type of selector.
-
 This is why attribute selectors are our best friend in this use case. By using them, we get significantly more human readable syntax:
 ```css
 [jsnamespace="pane.directions-options"] > span > [aria-label="Earlier trips"]
@@ -131,7 +132,6 @@ There are 3 of these fancy selectors:
 Now that we know the types of selectors we need, lets write selectors for the elements we need to interact with.
 
 First, the connect buttons:
-![](https://i.imgur.com/SmGVC9N.png)
 
 ```html
 <button aria-label="Invite REDACTED NAME to connect" id="ember2543" class="artdeco-button artdeco-button--2 artdeco-button--secondary ember-view">...</button>
