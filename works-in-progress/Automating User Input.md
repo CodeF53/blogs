@@ -4,21 +4,21 @@ I recently attended a lesson on networking and improving your online presence on
 Very early on in this lesson, I learned that some people look at your number of connections as some form of a measure of quality; if you don't have enough connections, you aren't worth their time.
 
 ### 6 degrees of separation
-After introducing that concept, they showed off [this neat page]() that lets you see the connections of your connections, and those connection's connections. Up to 3 layers deep.
+After introducing that concept, they showed off [this neat page](https://www.linkedin.com/search/results/people/?network=%5B%22F%22%2C%22S%22%2C%22O%22%5D&origin=FACETED_SEARCH&sid=pVV) that lets you see the connections of your connections, and those connection's connections. Up to 3 layers deep.
 
-Upon seeing this, I instantly was reminded of the idea of [six degrees of separation](https://en.wikipedia.org/wiki/Six_degrees_of_separation). A concept that 6 chained "_ of a _" statements can be used to connect any two people.
+Upon seeing this, I instantly was reminded of the idea of [six degrees of separation](https://en.wikipedia.org/wiki/Six_degrees_of_separation). The concept that 6 chained "\_\_\_ of a \_\_\_" statements can be used to connect any two people.
 
 From this, I knew that this page must give you a HUGE pool of people to connect with, and sure enough, despite me having less than 50 connections at the time, this page had over 8.5 million results.
 
 ### Adding it up
 
-Given the idea that more connections is better, and this pool of 8.5 million people I **could** connect with, my brain instantly got turning and I did a bit of math.
+Given the idea that more connections is better, and this pool of 8.5 million people I **could** connect with, my brain got turning and I did a bit of math.
 
-I instantly acknowledged that most of these people wouldn't accept if I sent them a request. Given that, I made a very conservative estimate that only 0.1% of people would accept given a request.
+I instantly acknowledged that most of these people wouldn't accept if I sent them a request. I made a very conservative estimate that only 0.1% of people would accept given a request.
 
-Putting the math for that in my browser, I determined I have potential of atleast 850k connections if I sent a request to everyone.
+Putting the math for that in my browser, I determined I could potentially make at least 850k new connections if I sent a request to everyone.
 
-Now, being realistic, there is no way in hell a human could ever send 850 million requests in any reasonable amount of time.
+Now, being realistic, there is no way in hell I could ever send 850 million requests in any reasonable amount of time.
 
 ... a human
 
@@ -31,21 +31,21 @@ There are 3 key parts of my method of automating user input.
 2. [Simulation of input on queried elements](#simulation-of-input-on-queried-elements)
 3. [A small bit of logic to put it all together](#putting-it-together)
 
-### Strong warning
+### ⚠️ Strong Warning ⚠️
 While what I am about to teach you how to do is super easy and useful, you should keep one thing in mind:
 
-**Always** read the rules of the site you are automating user input on because there is a good chance you can get banned from a site by doing this.
+**_Always_** read the rules of the site you are automating user input on because there is a good chance you can get banned from a site by doing this.
 
-I completely missed this step. Only after triggering LinkedIn's anti-automation measures, did I take a look at [the site rules](https://www.linkedin.com/legal/user-agreement#dos).
+I completely missed this step. Only _after_ triggering LinkedIn's anti-automation measures did I take a look at [the site rules](https://www.linkedin.com/legal/user-agreement#dos).
 
-Sure enough, what I did was specifically listed in the **Dont's** section
+Sure enough, what I did was specifically listed in the **Dont's** section.
 > ## 8.2 Dont's
 > **You agree that you will *not***:
 >
 > 13. Use bots or other automated methods to access the Services, add or download contacts, send or redirect messages;
 
 ## Querying page elements
-To send a connection there are two things we need to be able to find on the page:
+To send a connection there are three things we need to be able to find on the page:
 
 The actual connect buttons:
 
@@ -59,7 +59,7 @@ And, after sending connections to everyone on a page, we need to be able to find
 
 ![](https://i.imgur.com/qNebM1B.png)
 
-There is 2 very common javascript methods to find element(s):
+There are 2 very common javascript methods for finding elements:
 ```js
 // returns the first element that matches the selector
 document.querySelector(selector)
@@ -68,17 +68,17 @@ document.querySelector(selector)
 document.querySelectorAll(selector)
 ```
 
-In the name of being compact, I am going to make 2 functions that call these, just with significantly shorter names:
+For the sake of being compact, I am going to make 2 functions that are basically just aliases for these with significantly shorter names:
 ```js
 const qs = (selector) => { document.querySelector(selector) }
 const qsa = (selector) => { document.querySelectorAll(selector) }
 ```
-Doing this makes reading what matters here, the selector itself, easier.
+Doing this makes it easier to read the what really matters here: the selector itself.
 
 ### What is a selector?
 `querySelector` and `querySelectorAll` take in a single string, a CSS selector, and use it to find matching elements(s).
 
-CSS selectors were designed to make changing how certain elements look easier. While there are a LOT of css selectors, we really only are going to be using one type of selector, the attribute selector.
+CSS selectors were designed to make changing how certain elements look easier. While there are a LOT of different types of CSS selectors, we really only are going to be using one type of selector: the attribute selector.
 
 To see why, lets examine this html from google maps:
 ```html
@@ -128,8 +128,8 @@ There are 3 of these fancy selectors:
 [attr-name$=""]
 ```
 
-### Selecting the elements we need:
-Now that we know the types of selectors we need, lets write selectors for the elements we need to interact with.
+### Selecting the elements we need
+Now that we know the types of selectors we need, let's write selectors for the elements we need to interact with.
 
 First, the connect buttons:
 
@@ -151,7 +151,7 @@ Next, the send button:
 <button aria-label="Send now" id="ember2561" class="artdeco-button artdeco-button--2 artdeco-button--primary ember-view ml1">...</button>
 ```
 
-Selecting just a button for "Send now" seems pretty dangerous, so lets get something to select that makes sure we only ever select a button that sends a connection request.
+Selecting just a button that says "Send now" seems pretty dangerous, so lets look for something to select that makes sure we only ever select a button that sends a connection request.
 
 ```html
 <div data-test-modal="" role="dialog" tabindex="-1" class="artdeco-modal artdeco-modal--layer-default send-invite" size="medium" aria-labelledby="send-invite-modal">
@@ -206,12 +206,12 @@ button.addEventListener("click", (event) => {
 })
 ```
 
-Luckily, we can fake events like this using `dispatchEvent`
+Luckily, we can fake events like this using `dispatchEvent`:
 ```js
 button.dispatchEvent(new Event("click", {event options}))
 ```
 
-Generally for this to work for clicks, we need to pass in the option `bubbles:true`
+Generally for this to work for clicks, we need to pass in the option `bubbles:true`.
 
 Given this, here is a general method for clicking a node:
 ```js
@@ -229,7 +229,7 @@ const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
 Inorder to use this, we need to be able to use `await`, which is exclusive to asynchronous functions. All that really means is we need to make an async function that contains our code, then run it.
 
-While that sounds complicated, in practice, it's as simple as wrapping your code with this
+While that sounds complicated, in practice, it's as simple as wrapping your code with this:
 ```js
 (async ()=>{
   // put code here
@@ -237,19 +237,17 @@ While that sounds complicated, in practice, it's as simple as wrapping your code
 ```
 
 ### Other types of input
-While there are many types of input: button, checkbox, color, date, datetime-local, text, radio, and range.
+While there are many types of input, such as button, checkbox, color, date, datetime-local, text, radio, and range, there are actually only 2 types of _HTML_ input: `<button>` and `<input>`
 
-There are actually only 2 types of input: `<button>` and `<input>`
-
-No matter what type you of input it is all you have to do is change one thing:
+No matter what type of input it is, all you really have to do is change one thing:
 ```js
 qs("inputselector").value = newValue;
 ```
 
-Yeah, thats it.
+Yep. thats it.
 
 ## Putting it together
-Inorder to put together your automation logic, all you have to do is think through what actions you would make as a user, and then code them.
+In order to put together your automation logic, all you have to do is think through what actions you would make as a user, and then write them out as code.
 
 Click a connect button, then click the confirm send button:
 ```js
@@ -272,7 +270,7 @@ Alright, so then we just want to repeat that for every connect button:
 })()
 ```
 
-Then once we have invited everyone on the current page, go to the next one and do it again:
+Then once we have invited everyone on the current page, we move on to the next page and do it again:
 ```js
 (async ()=>{
   while(true) {
@@ -305,20 +303,16 @@ This didnt tell me to stop what I was doing though, so I sent the script over to
 
 Why he got this when I didnt seemed puzzling at first, but then I realized exactly why. I spent a fair bit of time calibrating the delays. Throughout that time I got a lot of invites sent out, so when it was done it only sent out like 30 invites at once, not triggering the detection.
 
-## Not triggering anti bot algorithms:
-### Prelude:
-So, if you are at the point of triggering a anti bot algorithm, the correct response it stop.
+## Not triggering anti-bot algorithms
+### Prelude
+So, if you are at the point of triggering a anti-bot algorithm, the correct response is to stop.
 
-Given that, this next section is completely for educational purposes. Dont do it.
+Given that, this next section is completely for educational purposes. **Don't do this.**
 
 ### Its super easy.
-The finalized script had inhuman speed, sending one invite every 10 milliseconds.
+The finalized script had inhuman speed, sending one invite every 10 milliseconds. The duration of a human blink is on average 100–150 milliseconds.
 
-The duration of a human blink is on average 100–150 milliseconds.
-
-We only ran into the anti bot algorithm when we got the script to run at full speed.
-
-So... just slow it down to realistic human speeds.
+We only ran into the anti-bot algorithm when we got the script to run at full speed. So... just slow it down to realistic human speeds.
 
 ```js
 while(true) {
@@ -341,11 +335,11 @@ while(true) {
 With this, you just have to start the script, then go about your day. Sure, its not fast, but it doesn't require any attention on your part.
 
 ## How developers can stop this type of script
-Anti bot detection based on speed is stupid.
+Anti-bot detection based on speed is stupid.
 
-Despite this, it seems like it's the only type of bot detection actually used on websites, which is super super shocking to me.
+Despite this, it seems like this is the only type of bot detection actually used on websites, which is **_super_** shocking to me.
 
-Lets look back at the basic javascript example for how buttons are linked up. More specifically, the data it gets:
+Let's look back at the basic javascript example for how buttons are linked up. More specifically, the data it gets:
 ```js
 button.addEventListener("click", (event) => {
   console.log(event)
@@ -360,21 +354,22 @@ click {
   isTrusted: true
 }
 ```
+And second, the `click` method:
 ```js
 click {
   isTrusted: false
 }
 ```
 
-Hmmmmmmmmmmmmmmmmmm
+Hmmmmmmmmmmmmmmmmmm...
 
-Wow, I wonder what this could possibly mean? Lets look at [the docs](https://developer.mozilla.org/en-US/docs/Web/API/Event/isTrusted)!
+I wonder what this could possibly mean? Lets look at [the docs](https://developer.mozilla.org/en-US/docs/Web/API/Event/isTrusted)!
 
 > The `isTrusted` read-only property of the `Event` interface is a boolean value that is `true` when the event was generated by a user action, and `false` when the event was created or modified by a script or dispatched via `EventTarget.dispatchEvent()`.
 
-WOW, shocking, its almost as if we have an `Event` attribute specifically to tell apart real and fake interaction!
+WOW, shocking, its almost as if we have an `Event` attribute specifically made for telling the difference between real and fake interactions!
 
-Using this would SUPER simple. If you don't want bots on your website, just add a check to your event listeners.
+Using this would be SUPER simple. If you don't want bots on your website, just add a check to your event listeners.
 ```js
 button.addEventListener("click", (event) => {
   if (event.isTrusted) {
@@ -394,11 +389,11 @@ button.addEventListener("click", (event) => {
 })
 ```
 
-WOW, that was super super hard to fix. No wonder websites haven't done that yet. It would take an absolute GENIUS to figure out how to add that singular `if` statement.
+WOW, that was _super_ hard to fix. No wonder websites haven't done that yet. It would take an absolute *g*E**N**i**U***s* to figure out how to add that singular `if` statement.
 
 ## Conclusion
 Making this type of automation is super easy.
 
-No matter what the rules of your site are, many people, me included, will just find your system of enforcement, and go around it.
+No matter what the rules of your site are, many people (me included) will just find the limitations of your system of enforcement, and work around it.
 
 The thing that utterly shocks me is how no website I have ever used uses `isTrusted` to differentiate real and fake clicks.
