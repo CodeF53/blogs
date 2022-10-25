@@ -17,7 +17,7 @@ Seeing these vulnerabilities is enough to annoy me into fixing it, even if unnec
 
 ## Fixing the vulnerability:
 
-This guide is based on [thomazcapra's solution](https://github.com/facebook/create-react-app/issues/12132#issuecomment-1130249584).
+This guide is based on a solution proposed by [thomazcapra](https://github.com/facebook/create-react-app/issues/12132#issuecomment-1130249584).
 
 
 Because the vulnerability originate's from react's dependence on `@svgr/webpack`, fixing the issue is as simple as updating to a version that doesn't have it.
