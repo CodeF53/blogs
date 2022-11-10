@@ -1,21 +1,30 @@
 # Using Action Cable with React and Rails.
-There are no tutorials for this, so I am making one.
+## Intro
+Earlier this week I wanted to use Action Cable for its nice two way connections. I ended up crying trying to understand the documentation as there is no good examples for implementing it anywhere.
 
+Even worse, there are absolutely no tutorials for using it with React.
+
+I wrote this guide to try and fill that void.
+
+## Prerequisites/Recommendations
 This Guide assumes you:
 - already have a functioning app with React on top of Rails.
 - have a User table that:
-  - implements `has_secure_password` from
   - stores logged in user_id inside `session[:user_id]`
 
-If you dont have any of that, consider taking a look at my [react rails template](https://github.com/CodeF53/react_rails_template)
+If you dont have any of that, consider starting with my [react rails template](https://github.com/CodeF53/react_rails_template)
 
 For a finished project that implements this tutorial, look at my [react rails chat app](https://github.com/codeF53/react_rails_chat), which is built off of that template.
 
 ## Postgresql
-### installing postgresql
-TODO
+Action Cable requires you to use postgresql.
 
-### switching to it
+### Making a new app with postgresql
+If you dont have an rails app yet, follow [this guide fully](https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-ruby-on-rails-application-on-ubuntu-18-04)
+
+### Switching an existing rails app to postgresql
+If you already have an app, but it isn't based on postgres, follow these steps to switch to it
+
 in your `/Gemfile` switch out sqlite3 for postgres:
 ```diff
 - # sqlite3 as database for Active Record
@@ -24,7 +33,7 @@ in your `/Gemfile` switch out sqlite3 for postgres:
 + gem 'pg', '~> 1.1'
 ```
 
-replace your `/config/database.yml` with a postgres one
+replace your `/config/database.yml` with a postgres one, replacing APPNAME with whatever you are calling your app
 ```yml
 default: &default
   adapter: postgresql
@@ -47,9 +56,17 @@ production:
   password: <% ENV["APPNAME_DATABASE_PASSWORD"] %>
 ```
 
+Then, follow [this guide](https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-ruby-on-rails-application-on-ubuntu-18-04) excluding step 3 to finish.
+
 ## Adding action cable
+Using action cable directly on top of postgresql is not recommended for performance reasons.
+
+Instead, its advised to use a separate server that runs between postgres and action cable, caching stuff to help improve performance.
+
+It seems like everyone uses redis for this purpose:
+
 ### Redis
-Install redis:
+Install redis-server:
 ```
 sudo apt install redis-server
 ```
@@ -60,15 +77,15 @@ Add redis to your `/Gemfile`
 gem 'redis', '~> 4.0'
 ```
 
-From now on when starting your server you have to start the redis server
+From now on when starting your server you have to start the redis server along with rails and npm
 ```
 redis-server
 rails s
 npm start
 ```
 
-### Action cable
-Inside `/config/application.rb` uncomment the require for action cable. (this is typically on line 14)
+### Setting Up Action cable
+First enable it by uncommenting the require for action cable Inside `/config/application.rb` . (this is typically on line 14)
 ```ruby
 require "action_cable/engine"
 ```
@@ -83,7 +100,7 @@ Rails.application.routes.draw do
 end
 ```
 
-Create `/config/cable.yml`:
+Create `/config/cable.yml`, this is what puts redis between your actioncable and postgres
 ```yml
 development:
   adapter: redis
@@ -118,6 +135,7 @@ module ApplicationCable
     private
 
     def find_verified_user
+      # ['_session_id'] is optional, only use it if you are using has_secure_password in your user model
       user = User.find(cookies.encrypted['_session_id']['user_id'])
 
       return user unless user.nil?
@@ -129,7 +147,6 @@ end
 ```
 
 ## Adding a channel and some broadcasts
-
 ### Channel
 This is channel that your frontend will end up connecting to. They handle subscribing to and unsubscribing from the handshake data stream thingy.
 
@@ -155,9 +172,9 @@ class ThingsChannel < ApplicationCable::Channel
 end
 ```
 
-In my case, I am going to make `rooms_channel.rb`
+In my case, I am going to make a channel for updating data related to a room.
 
-`rooms_channel.rb`, as an example
+`rooms_channel.rb`
 ```rb
 class RoomsChannel < ApplicationCable::Channel
   def subscribed
@@ -176,7 +193,7 @@ end
 ```
 
 ### Broadcasting data to the channel
-Broadcasts take a Model and a hash, then send it to all things subscribed to that Model's channel. You can put broadcasts basically anywhere in your code.
+Broadcasts take a Model and a hash, then send it to all users subscribed to that Model's channel. You can put broadcasts basically anywhere in your code.
 
 ```rb
 ThingsChannel.broadcast_to(
@@ -292,8 +309,17 @@ export default function App({ cable }) {
 ```
 
 ### Using the cable
+Using the cable you passed down, you create a new connection like this, passing in callback functions for when you successfully connect, disconnect, and receive data
+```js
+cable.subscriptions.create({ channel: "ThingsChannel", thing_id: thing_id },
+{
+  connected: () => console.log("thing connected!"),
+  disconnected: () => console.log("thing disconnected!"),
+  received: (updatedRoom) => setRoomObj(updatedRoom)
+})
+```
 
-
+Here is an example for a lazy implementation of that:
 ```js
 ...
 export default function Room({ cable }) {
@@ -323,3 +349,8 @@ export default function Room({ cable }) {
   </div>
 }
 ```
+
+## Conclusion
+While this certainly isn't exhaustive, I hope its enough to get you started.
+
+Feel free to ask questions in the comments.
