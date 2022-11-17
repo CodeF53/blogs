@@ -56,7 +56,7 @@ production:
   password: <% ENV["APPNAME_DATABASE_PASSWORD"] %>
 ```
 
-Then, follow [this guide](https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-ruby-on-rails-application-on-ubuntu-18-04) excluding step 3 to finish.
+Then, follow [this guide](https://www.digitalocean.com/community/tutorials/how-to-use-postgresql-with-your-ruby-on-rails-application-on-ubuntu-18-04) excluding step 3 and the `database.yml` part of step 4 to finish.
 
 ## Adding action cable
 Using action cable directly on top of postgresql is not recommended for performance reasons.
