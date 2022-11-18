@@ -17,3 +17,7 @@ Click the dropdown to the right of ssh, click view gcloud command
 Copy paste that into your terminal, do the ssh key stuff
 
 ## Setup:
+[do the setup](https://dev.to/f53/environment-setup-stuff-2p1e)
+
+## oreinae
+Clone your project

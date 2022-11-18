@@ -1,4 +1,11 @@
-## node
+## Nice shit
+### Good terminal
+http://kevinprogramming.com/using-zsh-in-windows-terminal/
+
+## The important shit
+This is what ya need
+
+### node
 ```sh
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
 ```
@@ -7,7 +14,7 @@ restart
 nvm install --lts
 ```
 
-## ruby/rvm
+### ruby/rvm
 ```
 sudo apt-get install software-properties-common
 sudo apt-add-repository -y ppa:rael-gc/rvm
@@ -21,7 +28,7 @@ rvm install 2.7.4 --default
 gem update --system
 ```
 
-## git
+### git
 ```
 sudo add-apt-repository ppa:git-core/ppa
 sudo apt update
