@@ -103,7 +103,7 @@ server {
   listen 80;
 
   location / {
-    root [PATH TO YOU RAILS PROJECT]/public;
+    root [PATH TO YOUR RAILS PROJECT]/public;
     try_files $uri @missing;
   }
 
@@ -156,11 +156,103 @@ If you refresh the page you were at earlier, you should now be able to see your 
 
 If you are having issues, click [here for a guide covering some common issues]()
 
-## Automatic Starting and Static IP
+## Finishing Touches
 ### Static IP
+Having to get the ip every time it changes is a pain. Lets make it static!
+
+Start by [navigating to Compute inside your project](https://console.cloud.google.com/compute), and click the link to go into controls for your instance:
+
+![](https://cdn.discordapp.com/attachments/1019985929642979348/1044297103133913158/image.png)
+
+Shut down the VM
+
+![](https://i.imgur.com/wttDUCh.png)
+
+Click edit:
+
+![](https://i.imgur.com/z6X8SIh.png)
+
+Scroll down to `Network interfaces`, and click the dropdown next to default:
+
+![](https://i.imgur.com/1SNC9Lw.png)
+
+Scroll down to `External IPv4 Address`, and select static:
+
+![](https://i.imgur.com/K1K8d3k.png)
+
+Click save:
+
+![](https://i.imgur.com/6lYHaJk.png)
+
+Start back up the VM
+
+![](https://i.imgur.com/UcrYboT.png)
+
+SSH back in and get the IP one last time:
+```
+wget http://ipinfo.io/ip -qO -
+```
 
 ### Automatic Starting
+Currently, you have to be SSHed into the server and have rails running to be able to connect, it would be nice if we could just turn it on and let it go.
+
+To do this we need to add a couple things, you can do this on your own machine, push the changes to git, then pull back down on the Google Machine.
+
+Start off by adding the `whenever` gem to your `gemfile`
+```rb
+gem 'whenever', require: false
+```
+
+Create a new file in `/config/schedule.rb`
+```rb
+every '@reboot' do
+  command 'sleep 30 && source /home/f53/.rvm/scripts/rvm && cd /home/f53/inhumane-cards && bundle exec rails s -e production'
+end
+```
+Replace `f53` with the output of `whoami` when run in your command line
+
+Replace `inhumane-cards` with whatever the name of your project is when its pulled down from git
+
+After that, SSH back in
+```
+cd project
+git pull
+bundle install
+whenever -w
+```
+
+This makes it so rails runs on every restart!
 
 ## Domain name
+Having a domain name is nice.\
 
+I am assuming you are using Google Domains for this, but the steps should be similar for other platforms:\
+<small>(I am not doing this right, but every time I try to do it the right way it breaks EVERYTHING)</small>
+
+Go to the DNS tab of google cloud, click show advanced settings, scroll down to Dynamic DNS, create one, click view credentials.
+
+Fill in this url with those credentials, your website, and your ip
+https://username:password@domains.google.com/nic/update?hostname=subdomain.yourdomain.com&myip=1.2.3.4
+
+For example:
+```
+https://XXXXXXXXXXXX:XXXXXXXXXXX@domains.google.com/nic/update?hostname=inhumanecards.com&myip=35.212.182.122
+```
+
+Then just paste that into your browser
 ## HTTPS
+Having HTTP is insecure, most browsers will yell at you if you dont have it.
+
+First, go back to your nginx config file and edit it with nano:
+```
+cd /etc/nginx/sites-enabled
+sudo nano default
+```
+
+Add `server_name example.com;` to the server config:
+```diff
+server {
++ server_name example.com;
+
+  location / {
+```
