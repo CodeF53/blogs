@@ -154,4 +154,13 @@ rails s -e production
 
 If you refresh the page you were at earlier, you should now be able to see your app!
 
-If you are having issues, click
+If you are having issues, click [here for a guide covering some common issues]()
+
+## Automatic Starting and Static IP
+### Static IP
+
+### Automatic Starting
+
+## Domain name
+
+## HTTPS
