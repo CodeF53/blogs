@@ -154,7 +154,7 @@ rails s -e production
 
 If you refresh the page you were at earlier, you should now be able to see your app!
 
-If you are having issues, click [here for a guide covering some common issues]()
+If you are having issues, click [here for a guide covering some common issues](https://github.com/CodeF53/blogs/blob/main/works-in-progress/common-hosting-issues.md)
 
 ## Finishing Touches
 ### Static IP
