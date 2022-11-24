@@ -1,6 +1,13 @@
-## Intro:
-Over the past month I have been making a mod that adds a Custom CSS to Slack inspired by Discord mods that do the same.
+## MetaIntro:
+Early this year I made a mod that adds a Custom CSS to Slack inspired by Discord mods that do the same.
 
+I was happy enough with how the mod worked to release it proper, but never got the blog for installing it done. Because of MacOS being stupid.
+
+I am abandoning SlackMod, but it will keep working for a LONG time because of the way I made it.
+
+The following is the blog I was never proud of enough to publish, going over how to install the mod.
+
+## Intro:
 If you are interested in the development process I have went through, take a look at [my other blogs on the mod](https://dev.to/f53/series/19684).
 
 After a whole lot of work, I am finally happy enough to do an official release for the mod!
